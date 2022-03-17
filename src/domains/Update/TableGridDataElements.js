@@ -44,7 +44,7 @@ const StyledTableCellHeader = styled(TableCell, {
   name: "TableGridDataElements",
   slot: "header",
 })(({ theme }) => ({
-  backgroundColor: theme.palette.primary.dark,
+  backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
   padding: "4px",
   borderBottom: "none",

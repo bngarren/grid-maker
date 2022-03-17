@@ -32,6 +32,13 @@ import { v4 as uuidv4 } from "uuid";
 
 /* Styling */
 
+const StyledRoot = styled(Box, {
+  name: "NestedContentInput",
+  slot: "root",
+})(({ theme, sectionIsSelected }) => ({
+  paddingTop: theme.spacing(1),
+}));
+
 const StyledMovableLi = styled("li", {
   name: "ContentInput",
   slot: "li",
@@ -129,7 +136,7 @@ const NestedContentInput = ({
   }, []);
 
   return (
-    <>
+    <StyledRoot>
       {data?.length > 0 ? (
         <MovableList
           values={data}
@@ -171,7 +178,7 @@ const NestedContentInput = ({
       ) : (
         <></>
       )}
-    </>
+    </StyledRoot>
   );
 };
 export default NestedContentInput;
@@ -187,7 +194,8 @@ const StyledSectionRoot = styled(Stack, {
     prop !== "selected" &&
     prop !== "isDirty",
 })(({ theme, selected, subdued, isDragged, isDirty }) => ({
-  marginLeft: "10px",
+  marginLeft: theme.spacing(1),
+  marginRight: theme.spacing(1),
   marginTop: "3px",
   marginBottom: "3px",
   cursor: selected ? "default" : "pointer",
@@ -465,7 +473,7 @@ const Section = ({
         <StyledSectionTopBox>
           <Typography
             sx={{
-              fontSize: "formFontSizeLevel2",
+              fontSize: "formFontSizeLevel3",
               lineHeight: "1",
               whiteSpace: "pre-line",
               width: "100%",
@@ -475,7 +483,7 @@ const Section = ({
             <Typography
               component="span"
               sx={{
-                fontSize: "formFontSizeLevel1",
+                fontSize: "formFontSizeLevel2",
                 fontWeight: "bold",
                 marginRight: "5px",
                 ...(isEmpty === true && {

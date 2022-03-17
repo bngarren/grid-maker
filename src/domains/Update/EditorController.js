@@ -10,10 +10,12 @@ import {
   Switch,
   IconButton,
   Tooltip,
+  Fade,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import CircleIcon from "@mui/icons-material/Circle";
 
 // React-hook-form
 import { useForm, FormProvider } from "react-hook-form";
@@ -34,9 +36,55 @@ import { APP_TEXT } from "../../utils";
 
 /* Styling */
 
+const StyledGridContainer = styled(Grid, {
+  name: "EditorController",
+  slot: "container",
+  shouldForwardProp: (prop) => prop !== "isDirty" && prop !== "addTopMargin",
+})(({ theme, isDirty, addTopMargin }) => ({
+  boxShadow: isDirty ? theme.shadows[5] : theme.shadows[1],
+  borderRadius: "4px",
+  marginTop: addTopMargin && theme.spacing(1),
+}));
+
+const StyledToolbarTop = styled(Toolbar, {
+  name: "EditorController",
+  slot: "toolbar-top",
+  shouldForwardProp: (prop) => prop !== "isDirty",
+})(({ theme, isDirty }) => ({
+  minHeight: "36px",
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "space-between",
+  backgroundColor: isDirty
+    ? theme.palette.primary.light
+    : theme.palette.primary.main,
+  borderTopRightRadius: "4px",
+  borderTopLeftRadius: "4px",
+  transition: theme.transitions.create(["background-color"]),
+}));
+
+const StyledToolbarBottom = styled(Toolbar, {
+  name: "EditorController",
+  slot: "toolbar-bottom",
+  shouldForwardProp: (prop) => prop !== "isDirty",
+})(({ theme, isDirty }) => ({
+  minHeight: "32px",
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "center",
+  fontSize: theme.typography.formFontSizeLevel3,
+  color: theme.palette.secondary.light,
+  backgroundColor: isDirty
+    ? theme.palette.primary.light
+    : theme.palette.primary.main,
+  borderBottomRightRadius: "4px",
+  borderBottomLeftRadius: "4px",
+  transition: theme.transitions.create(["background-color"]),
+}));
+
 const StyledNavigateIconButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.primary.light,
-  padding: 5,
+  padding: 2,
   "&:hover": {
     color: theme.palette.secondary.dark,
     cursor: "pointer",
@@ -207,87 +255,118 @@ const EditorController = ({
 
   /* Renders the Toolbar associated with the Editor, includes
   Navigation arrows, Save, and Reset buttons */
-  const renderToolbar = () => (
-    <Toolbar variant="dense">
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          minWidth: "235px",
-        }}
-      >
-        <StyledNavigateIconButton
-          disabled={isDirty}
-          disableRipple
-          onClick={() => onChangeGridDataElement(true)}
-          size="large"
-        >
-          <NavigateBeforeIcon
-            sx={{ fontSize: "4rem", textShadow: "shadows.1" }}
-          />
-        </StyledNavigateIconButton>
-        <Typography variant="h1" sx={{ color: "grey.300" }}>
-          {initialGridDataElementData.location || ""}
-        </Typography>
-        <StyledNavigateIconButton
-          disabled={isDirty}
-          disableRipple
-          onClick={() => onChangeGridDataElement(false)}
-          size="large"
-        >
-          <NavigateNextIcon sx={{ fontSize: "4rem" }} />
-        </StyledNavigateIconButton>
-      </Box>
-      <Stack direction="row" spacing={1}>
-        <ButtonStandard disabled={!isDirty} onClick={onClickSaveButton}>
-          {APP_TEXT.editorSave}
-        </ButtonStandard>
-        <ButtonStandard
-          disabled={!isDirty}
-          secondary
-          onClick={() => {
-            reset();
+  const renderToolbarTop = () => (
+    <StyledToolbarTop variant="dense" isDirty={isDirty}>
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            minWidth: "100px",
           }}
         >
-          {APP_TEXT.editorReset}
-        </ButtonStandard>
+          <StyledNavigateIconButton
+            disabled={isDirty}
+            disableRipple
+            onClick={() => onChangeGridDataElement(true)}
+          >
+            <NavigateBeforeIcon
+              sx={{ fontSize: "1.6rem", textShadow: "shadows.1" }}
+            />
+          </StyledNavigateIconButton>
+          <Typography
+            variant="h5"
+            sx={{ fontSize: "1.2rem", color: "grey.200" }}
+          >
+            {initialGridDataElementData.location || ""}
+          </Typography>
+          <StyledNavigateIconButton
+            disabled={isDirty}
+            disableRipple
+            onClick={() => onChangeGridDataElement(false)}
+          >
+            <NavigateNextIcon sx={{ fontSize: "1.6rem" }} />
+          </StyledNavigateIconButton>
+        </Box>
+        <Tooltip
+          title={
+            (demoBoxCollapsed ? APP_TEXT.showDemoBox : APP_TEXT.hideDemoBox) +
+            ` (${settings.hotkeys.toggleDemoBox})`
+          }
+          enterDelay={300}
+        >
+          <Switch
+            size="small"
+            checked={!demoBoxCollapsed}
+            onChange={handleToggleDemoBox}
+            color="default"
+          />
+        </Tooltip>
       </Stack>
-    </Toolbar>
+      <Fade in={isDirty}>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <ButtonStandard
+            sx={{
+              maxHeight: "30px",
+              color: "secondary.light",
+            }}
+            startIcon={
+              <CircleIcon
+                sx={{
+                  color: "secondary.dark",
+                }}
+              />
+            }
+            disabled={!isDirty}
+            secondary
+            onClick={onClickSaveButton}
+          >
+            {APP_TEXT.editorSave}
+          </ButtonStandard>
+          <ButtonStandard
+            sx={{
+              maxHeight: "30px",
+            }}
+            disabled={!isDirty}
+            secondary
+            onClick={() => {
+              reset();
+            }}
+          >
+            {APP_TEXT.editorReset}
+          </ButtonStandard>
+        </Stack>
+      </Fade>
+    </StyledToolbarTop>
+  );
+
+  const renderToolbarBottom = () => (
+    <StyledToolbarBottom variant="dense" isDirty={isDirty}>
+      {isDirty && `Modified ("${settings.hotkeys.saveGridData}" to save)`}
+    </StyledToolbarBottom>
   );
 
   if (initialGridDataElementData) {
     return (
-      <Grid container>
-        <FormProvider {...form}>
+      <FormProvider {...form}>
+        <DemoBox collapsed={demoBoxCollapsed} />
+        <StyledGridContainer
+          container
+          isDirty={isDirty}
+          addTopMargin={!demoBoxCollapsed}
+        >
           <Grid item xs={12}>
-            <Tooltip
-              title={
-                (demoBoxCollapsed
-                  ? APP_TEXT.showDemoBox
-                  : APP_TEXT.hideDemoBox) +
-                ` (${settings.hotkeys.toggleDemoBox})`
-              }
-              enterDelay={300}
-            >
-              <Switch
-                checked={!demoBoxCollapsed}
-                onChange={handleToggleDemoBox}
-              />
-            </Tooltip>
-            <DemoBox collapsed={demoBoxCollapsed} />
-          </Grid>
-          <Grid item xs={12}>
-            {renderToolbar()}
+            {renderToolbarTop()}
           </Grid>
           <Grid item xs={12}>
             <Editor control={control} />
           </Grid>
           <Grid item xs={12}>
-            {renderToolbar()}
+            {renderToolbarBottom()}
           </Grid>
-        </FormProvider>
-      </Grid>
+        </StyledGridContainer>
+      </FormProvider>
     );
   } else {
     return <></>;

@@ -57,12 +57,10 @@ const QuickAddInput = ({ onSubmit = (f) => f, reset, ...props }) => {
         value={value}
         onChange={handleOnChange}
         onKeyDown={handleKeyDown}
+        placeholder="Add section"
         size="small"
         inputProps={{
           size: "15",
-        }}
-        InputLabelProps={{
-          shrink: true,
         }}
         InputProps={{
           endAdornment: (

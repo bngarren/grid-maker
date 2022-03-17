@@ -2,7 +2,7 @@ import * as React from "react";
 
 // MUI
 import { styled } from "@mui/system";
-import { Autocomplete, Checkbox } from "@mui/material";
+import { Autocomplete, Checkbox, Popper } from "@mui/material";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
@@ -14,14 +14,10 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /* Styling */
 
-const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
-  "& .MuiAutocomplete-popper": {
-    width: "300px !important",
-    zIndex: 200,
-    fontSize: 13,
-    color: "#586069",
-    backgroundColor: "#f6f8fa",
-  },
+const StyledAutocomplete = styled(Autocomplete, {
+  name: "ContingencyInput",
+  slot: "root",
+})(({ theme }) => ({
   "& .MuiAutocomplete-option": {
     minHeight: "auto",
     alignItems: "center",
@@ -34,18 +30,35 @@ const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
       color: theme.palette.secondary.contrastText,
     },
   },
-  "& .MuiAutocomplete-paper": {
-    margin: 0,
-    color: "#586069",
-    fontSize: 14,
-    backgroundColor: "#f6f8fa",
+  "& .MuiAutocomplete-inputRoot": {
+    padding: "4px 4px 5px 6px",
   },
 }));
+
+const StyledPopper = styled(Popper, {
+  name: "ContingencyInput",
+  slot: "popper",
+})(({ theme }) => ({}));
+
+const StyledListBox = styled("ul", {
+  name: "ContingencyInput",
+  slot: "listbox",
+})(({ theme }) => ({}));
+
+const CustomPopper = (props) => {
+  return (
+    <StyledPopper
+      {...props}
+      style={{ width: "300px" }}
+      placement="auto-start"
+    />
+  );
+};
 
 /* Should be wrapped by a Controller component from react-hook-form which renders
 this ContingencyInput component and passes in the field prop */
 const ContingencyInput = React.forwardRef(
-  ({ options, label, field, ...props }, ref) => {
+  ({ options, label, field, isDirty, ...props }, ref) => {
     return (
       <StyledAutocomplete
         {...props}
@@ -59,14 +72,29 @@ const ContingencyInput = React.forwardRef(
         options={options}
         onChange={(_, data) => field.onChange(data)}
         value={field.value}
-        renderInput={(params) => {
+        ListboxComponent={StyledListBox}
+        PopperComponent={CustomPopper}
+        renderInput={({
+          InputLabelProps,
+          InputProps,
+          inputProps,
+          ...params
+        }) => {
           return (
             <EditorTextField
-              {...params}
-              InputLabelProps={{
-                shrink: true,
+              InputProps={{
+                ...InputProps,
               }}
+              InputLabelProps={{
+                ...InputLabelProps,
+              }}
+              ref={InputProps.ref}
+              inputProps={{
+                ...inputProps,
+              }}
+              {...params}
               label={label}
+              isDirty={isDirty}
               placeholder="Add contingency"
             />
           );

@@ -1,7 +1,7 @@
 import * as React from "react";
 
 // MUI
-import { Grid, Box, Stack, Typography, TextField } from "@mui/material";
+import { Grid, Box, Stack, Typography, OutlinedInput } from "@mui/material";
 import { styled } from "@mui/system";
 
 // React-hook-form
@@ -10,35 +10,30 @@ import { Controller, useFormState, useFormContext } from "react-hook-form";
 // Components
 import ContentInputToolbar from "./ContentInputToolbar";
 import NestedContentInput from "./NestedContentInput";
+import CustomLabel from "./CustomLabel";
 
 // Util
 import { v4 as uuidv4 } from "uuid";
+import { forOwn } from "lodash-es";
 
 /* Styling - ContentInput */
 
 const StyledRoot = styled(Box, {
   name: "ContentInput",
   slot: "Root",
-})(() => ({
+})(({ theme }) => ({
+  position: "relative",
   backgroundColor: "white",
   padding: 0,
-  minHeight: "225px",
-}));
-
-const StyledHeader = styled(Stack, {
-  name: "ContentInput",
-  slot: "header",
-})(() => ({
-  alignItems: "center",
-  paddingTop: "10px",
-  paddingBottom: "8px",
-  minHeight: "45px",
+  minHeight: "250px",
+  border: "1px solid rgba(0, 0, 0, 0.23)", //to match mui outlined input
+  borderRadius: "4px",
 }));
 
 const StyledContentInputContainer = styled(Grid, {
   name: "ContentInput",
   slot: "contentInput",
-})(() => ({
+})(({ theme }) => ({
   flexDirection: "row",
   flex: "2",
 }));
@@ -52,7 +47,14 @@ const StyledContentInputContainer = styled(Grid, {
  *
  */
 const ContentInput = () => {
-  const { control, setValue, getValues, watch, unregister } = useFormContext();
+  const {
+    control,
+    setValue,
+    getValues,
+    watch,
+    unregister,
+    formState: { dirtyFields },
+  } = useFormContext();
 
   /* want to know if the content type has been changed in the toolbar
   so we can display the correct one, i.e. simple versus nested */
@@ -70,10 +72,14 @@ const ContentInput = () => {
     }
   }, [contentType, unregister]);
 
-  /* Tracks whether any of these form values have become dirty */
-  const { isDirty: contentInputIsDirty } = useFormState({
-    control,
-    name: ["contentType", "simpleContent", "nestedContent"],
+  /* Tracks whether any of these fields have become dirty */
+  /*//! using isDirty rather than dirtyFields did not work... */
+  let contentInputIsDirty = false;
+  forOwn(dirtyFields, (_, key) => {
+    if (["contentType", "simpleContent", "nestedContent"].includes(key)) {
+      contentInputIsDirty = true;
+      return false;
+    }
   });
 
   const handleOnAddSection = React.useCallback(
@@ -118,101 +124,70 @@ const ContentInput = () => {
   );
 
   return (
-    <StyledRoot>
-      <StyledHeader direction="row" spacing={1}>
-        <Typography
-          variant="h6"
-          sx={{
-            /* needs to match font appearance of
-          EditorTextField labels */
-            px: 0.8,
-            fontSize: "1rem",
-            fontWeight: "bold",
-            transform: "scale(0.75)",
-            color: contentInputIsDirty && "secondary.dark",
-          }}
-        >
-          Content
-        </Typography>
-
+    <Box>
+      <CustomLabel label="Content" isDirty={contentInputIsDirty} />
+      <StyledRoot tabIndex={-1}>
         <ContentInputToolbar
           control={control}
           contentType={contentType}
           onAddSection={handleOnAddSection}
           onSelectTemplate={handleOnSelectTemplate}
         />
-      </StyledHeader>
-      <StyledContentInputContainer>
-        {contentType === "simple" && (
-          <Controller
-            name="simpleContent"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                fullWidth
-                multiline
-                minRows={10}
-                maxRows={20}
-                sx={{
-                  lineHeight: "1.5em",
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    //border: "none",
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "2px",
+        <StyledContentInputContainer>
+          {contentType === "simple" && (
+            <Controller
+              name="simpleContent"
+              control={control}
+              render={({ field }) => (
+                <OutlinedInput
+                  fullWidth
+                  placeholder="Enter some information here"
+                  multiline
+                  minRows={10}
+                  maxRows={20}
+                  sx={{
+                    lineHeight: "1.5em",
+                    backgroundColor: "white",
                     "& fieldset": {
-                      // Baseline border
-                      borderColor: "transparent",
+                      border: "none",
                     },
-                    "&:hover fieldset": {
-                      borderColor: "primary.light",
-                    },
-                    "&.Mui-focused fieldset": {
-                      // Focused border
-                      borderWidth: "0.1em",
-                      borderColor: "primary.main",
-                      boxShadow: "rgba(17, 17, 26, 0.15) 0px 1px 0px",
-                    },
-                  },
-                  "& .MuiOutlinedInput-input": {
-                    fontSize: "formFontSizeLevel1",
-                  },
-                  "& .MuiInputBase-multiline": {
-                    padding: 0,
                     "& .MuiOutlinedInput-input": {
-                      padding: "10px 14px 4px 14px",
+                      fontSize: "formFontSizeLevel1",
                     },
-                  },
-                }}
-                {...field}
-              />
-            )}
-          />
-        )}
-
-        {contentType === "nested" && (
-          <Controller
-            control={control}
-            name="nestedContent"
-            render={({
-              field: { value, onChange, ref },
-              fieldState,
-              formState,
-            }) => {
-              return (
-                <NestedContentInput
-                  data={value}
-                  onChange={onChange}
-                  inputRef={ref}
-                  fieldState={fieldState}
-                  formState={formState}
+                    "&.MuiInputBase-multiline": {
+                      padding: "10px 4px 5px 12px",
+                    },
+                  }}
+                  {...field}
                 />
-              );
-            }}
-          />
-        )}
-      </StyledContentInputContainer>
-    </StyledRoot>
+              )}
+            />
+          )}
+
+          {contentType === "nested" && (
+            <Controller
+              control={control}
+              name="nestedContent"
+              render={({
+                field: { value, onChange, ref },
+                fieldState,
+                formState,
+              }) => {
+                return (
+                  <NestedContentInput
+                    data={value}
+                    onChange={onChange}
+                    inputRef={ref}
+                    fieldState={fieldState}
+                    formState={formState}
+                  />
+                );
+              }}
+            />
+          )}
+        </StyledContentInputContainer>
+      </StyledRoot>
+    </Box>
   );
 };
 

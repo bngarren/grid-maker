@@ -1,7 +1,8 @@
 import { useEffect, useCallback, useRef, memo } from "react";
 
 // MUI
-import { Paper, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
+import { styled } from "@mui/system";
 
 import { usePopupState } from "material-ui-popup-state/hooks";
 
@@ -21,6 +22,14 @@ import { useSettings } from "../../context/Settings";
 import { getCursorPos, setCursorPos } from "../../utils/CursorPos";
 
 /* Styling */
+
+const StyledEditorRoot = styled(Box, {
+  name: "Editor",
+  slot: "Root",
+})(({ theme }) => ({
+  padding: "20px 20px 20px 20px",
+  backgroundColor: theme.palette.grey[50],
+}));
 
 const Editor = ({ control }) => {
   const { settings } = useSettings();
@@ -124,55 +133,72 @@ const Editor = ({ control }) => {
 
   /*  - - - - - RETURN - - - -  */
   return (
-    <Paper
-      sx={{
-        p: 1,
-        backgroundColor: "transparent",
-        boxShadow: "none",
-      }}
-    >
+    <StyledEditorRoot>
       <form id="editor" autoComplete="off" spellCheck="false">
         <Stack direction="column" spacing={2}>
           <Stack direction="row" spacing={1}>
             <Controller
               control={control}
               name="location"
-              render={({ field }) => (
-                <EditorTextField label="Location" inputSize={10} {...field} />
+              render={({ field, fieldState: { isDirty } }) => (
+                <EditorTextField
+                  label="Location"
+                  inputSize={6}
+                  inputProps={{
+                    sx: { textAlign: "center" },
+                  }}
+                  isDirty={isDirty}
+                  {...field}
+                />
               )}
             />
             <Controller
               control={control}
               name="lastName"
-              render={({ field }) => (
-                <EditorTextField label="Last Name" {...field} />
+              render={({ field, fieldState: { isDirty } }) => (
+                <EditorTextField
+                  label="Last Name"
+                  isDirty={isDirty}
+                  {...field}
+                />
               )}
             />
             <Controller
               control={control}
               name="firstName"
-              render={({ field }) => (
-                <EditorTextField label="First Name" {...field} />
+              render={({ field, fieldState: { isDirty } }) => (
+                <EditorTextField
+                  label="First Name"
+                  isDirty={isDirty}
+                  {...field}
+                />
               )}
             />
             <Controller
               control={control}
               name="team"
-              render={({ field }) => (
-                <EditorTextField label="Team" inputSize={10} {...field} />
+              render={({ field, fieldState: { isDirty } }) => (
+                <EditorTextField
+                  label="Team"
+                  inputSize={15}
+                  isDirty={isDirty}
+                  {...field}
+                />
               )}
             />
           </Stack>
           <Controller
             control={control}
             name="summary"
-            render={({ field }) => (
+            render={({ field, formState: { isDirty } }) => (
               <EditorTextField
                 label="Summary"
+                placeholder="Enter some identifying data (usually 1-2 sentences)"
                 fullWidth
                 multiline
                 minRows={2}
                 maxRows={6}
+                isDirty={isDirty}
                 {...field}
               />
             )}
@@ -180,29 +206,34 @@ const Editor = ({ control }) => {
           <Controller
             control={control}
             name="contingencies"
-            render={({ field }) => (
+            render={({ field, formState: { isDirty } }) => (
               <ContingencyInput
                 label="Contingencies"
                 options={settings.contingencyOptions}
+                isDirty={isDirty}
                 field={field}
               />
             )}
             onChange={([, data]) => data}
           />
-        </Stack>
-        <Stack direction="column" spacing={2}>
           <ContentInput />
           <Controller
             control={control}
             name="bottomText"
-            render={({ field }) => (
-              <EditorTextField label="Bottom Text" inputSize={30} {...field} />
+            render={({ field, fieldState: { isDirty } }) => (
+              <EditorTextField
+                placeholder="One to several words on the bottom"
+                label="Bottom Text"
+                inputSize={30}
+                isDirty={isDirty}
+                {...field}
+              />
             )}
           />
         </Stack>
       </form>
       <SnippetPopover popupState={popupState} onSelect={onSnippetSelected} />
-    </Paper>
+    </StyledEditorRoot>
   );
 };
 
