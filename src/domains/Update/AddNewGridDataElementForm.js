@@ -12,7 +12,7 @@ import { styled } from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
 
 // Context
-import { useGridStateContext } from "../../context/GridState";
+import { useGridState } from "../../context/GridState";
 
 // Util
 import { APP_TEXT } from "../../utils";
@@ -25,7 +25,7 @@ const StyledOutlinedInput = styled(OutlinedInput, {
 })(() => ({}));
 
 const AddNewGridDataElementForm = ({ onSubmit = (f) => f }) => {
-  const { locationLayout, gridData, updateGridData } = useGridStateContext();
+  const { locationLayout, gridData, updateGridData } = useGridState();
   const [value, setValue] = useState("");
 
   const newLocationAlreadyExists = (location) =>

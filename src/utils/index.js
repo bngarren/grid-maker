@@ -10,6 +10,7 @@ export { default as getPrettyLocationLayout } from "./getPrettyLocationLayout";
 export { default as isGridDataElementEmpty } from "./isGridDataElementEmpty";
 export { default as readFileAsync } from "./readFileAsync";
 export { setCursorPos, getCursorPos } from "./CursorPos";
+export * from "./GridStateHelpers";
 
 export {
   DEFAULT_GRID_DATA_ELEMENT_DATA,

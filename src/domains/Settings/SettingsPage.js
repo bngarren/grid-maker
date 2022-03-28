@@ -14,7 +14,7 @@ import { useDialog } from "../../components";
 
 // Context
 import { useSettings } from "../../context/Settings";
-import { useGridStateContext } from "../../context/GridState";
+import { useGridState } from "../../context/GridState";
 
 // Utility
 import {
@@ -33,7 +33,7 @@ const SettingsPage = () => {
   const { dispatchSettings } = useSettings();
 
   /* Get GridData and locationLayout from context */
-  const { locationLayout, gridData, updateGridData } = useGridStateContext();
+  const { locationLayout, gridData, updateGridData } = useGridState();
 
   const { confirm } = useDialog();
 

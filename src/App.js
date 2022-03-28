@@ -18,6 +18,11 @@ import { BrowserRouter } from "react-router-dom";
 import { Firebase } from "./api/Firebase";
 import { config } from "./api/credentials";
 import AuthStateProvider from "./context/AuthState";
+
+// Grid Template system
+import TemplateProvider from "./context/Template";
+
+// GridState
 import GridStateProvider from "./context/GridState";
 
 const fb = new Firebase({ ...config });
@@ -29,19 +34,21 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <AuthStateProvider Firebase={fb}>
-            <GridStateProvider Firebase={fb}>
-              <DialogProvider>
-                <BrowserRouter>
-                  <Container maxWidth="xl">
-                    <Header />
-                    <main>
-                      <PageRouter />
-                    </main>
-                  </Container>
-                  <Footer />
-                </BrowserRouter>
-              </DialogProvider>
-            </GridStateProvider>
+            <TemplateProvider>
+              <GridStateProvider Firebase={fb}>
+                <DialogProvider>
+                  <BrowserRouter>
+                    <Container maxWidth="xl">
+                      <Header />
+                      <main>
+                        <PageRouter />
+                      </main>
+                    </Container>
+                    <Footer />
+                  </BrowserRouter>
+                </DialogProvider>
+              </GridStateProvider>
+            </TemplateProvider>
           </AuthStateProvider>
         </ThemeProvider>
       </SettingsProvider>

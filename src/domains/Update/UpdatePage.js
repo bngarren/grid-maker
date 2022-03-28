@@ -24,14 +24,14 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 // Firebase
-import { useGridStateContext } from "../../context/GridState";
+import { useGridState } from "../../context/GridState";
 
 const UpdatePage = () => {
   // Media queries for CSS
   const media_atleast_md = useMediaQuery("(min-width:960px)");
 
   // The truth GridState and gridData
-  const { gridData, census, updateGridData } = useGridStateContext();
+  const { gridData, census, updateGridData } = useGridState();
 
   /* Index of the gridDataElement selected and currently being "edited" */
   const [selectedKey, setSelectedKey] = useState(null);

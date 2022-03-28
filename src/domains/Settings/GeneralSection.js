@@ -6,14 +6,14 @@ import CustomTextField from "./CustomTextField";
 import CustomFormControlSetting from "./CustomFormControlSetting";
 
 // Context
-import { useGridStateContext } from "../../context/GridState";
+import { useGridState } from "../../context/GridState";
 
 // Util
 import { getPrettyLocationLayout } from "../../utils";
 
 const GeneralSection = ({ onSave = (f) => f }) => {
   /* Get GridData and locationLayout from context */
-  const { locationLayout } = useGridStateContext();
+  const { locationLayout } = useGridState();
 
   return (
     <Box>

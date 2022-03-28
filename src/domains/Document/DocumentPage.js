@@ -3,11 +3,11 @@ import { PDFViewer } from "@react-pdf/renderer";
 import MyDocument from "./MyDocument";
 
 import { useSettings } from "../../context/Settings";
-import { useGridStateContext } from "../../context/GridState";
+import { useGridState } from "../../context/GridState";
 
 const DocumentPage = () => {
   const { settings } = useSettings();
-  const { locationLayout, gridData, census } = useGridStateContext();
+  const { locationLayout, gridData, census } = useGridState();
 
   if (gridData) {
     return (

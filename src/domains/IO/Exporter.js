@@ -2,7 +2,7 @@ import { cloneElement } from "react";
 import { saveAs } from "file-saver";
 
 // Context
-import { useGridStateContext } from "../../context/GridState";
+import { useGridState } from "../../context/GridState";
 import { useAuthStateContext } from "../../context/AuthState";
 
 // Utility
@@ -31,7 +31,7 @@ const Exporter = ({
 
   /* Either use the selected grid data passed in as a prop,
   or default to the full gridData from GridStateContext */
-  const { gridData } = useGridStateContext();
+  const { gridData } = useGridState();
   const dataToExport = { gridData: gridDataToExport || gridData };
 
   if (authState?.user) {

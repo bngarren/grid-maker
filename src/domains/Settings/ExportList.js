@@ -22,7 +22,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled } from "@mui/system";
 
 // Context
-import { useGridStateContext } from "../../context/GridState";
+import { useGridState } from "../../context/GridState";
 
 // Utility
 import { isGridDataElementEmpty } from "../../utils";
@@ -109,7 +109,7 @@ const ExportItem = ({ value, selected, toggleSelected }) => {
  * @returns React component
  */
 const ExportList = ({ onChangeSelected = (f) => f }) => {
-  const { gridData } = useGridStateContext();
+  const { gridData } = useGridState();
 
   const [expanded, setExpanded] = React.useState(false);
   const [selected, setSelected] = React.useState([]);

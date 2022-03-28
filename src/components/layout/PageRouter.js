@@ -5,7 +5,11 @@ import {
   DocumentPage,
   SettingsPage,
   UpdatePage,
+  TemplatePage,
 } from "../../domains";
+
+// Context
+import TemplateEditorProvider from "../../domains/Template/TemplateEditor";
 
 // Authentication
 import { useAuthStateContext } from "../../context/AuthState";
@@ -37,6 +41,16 @@ const PageRouter = () => {
           element={
             <RequireAuth>
               <SettingsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/template"
+          element={
+            <RequireAuth>
+              <TemplateEditorProvider>
+                <TemplatePage />
+              </TemplateEditorProvider>
             </RequireAuth>
           }
         />
