@@ -17,20 +17,17 @@ export const mergeGridTemplateWithGridData = (gridTemplate, gridData) => {
   // Loop through each gridTemplate row
   gridTemplate.rows.forEach((row) => {
     // Loop through each templateElement for this row
-    row.elements.forEach((element) => {
-      let elementInGridData = findElementInGridData(
-        gridData,
-        element.elementID
-      );
+    row.elements.forEach((elementID) => {
+      let elementInGridData = findElementInGridData(gridData, elementID);
       if (elementInGridData) {
         newGridData[elementInGridData] = {
           ...gridData[elementInGridData],
-          templateElementName: element.name,
+          //templateElementName: element.name,
         };
       } else {
         newGridData.push({
-          templateElementID: element.elementID,
-          templateElementName: element.name,
+          //templateElementID: element.elementID,
+          // templateElementName: element.name,
           value: "",
         });
       }

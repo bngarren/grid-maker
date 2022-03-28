@@ -11,20 +11,34 @@ import {
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { TemplateElementType } from "../../context/Template";
+import DefaultTemplate from "./DefaultTemplate";
 
 const ElementPopover = React.forwardRef(
   (
-    { popupState, element, index, onChangeElement, onDeleteElement, ...props },
+    {
+      popupState,
+      element,
+      isIndexElement,
+      onChangeIndexElement,
+      onChangeElement,
+      onDeleteElement,
+      ...props
+    },
     ref
   ) => {
+    // Controlled inputs
     const [name, setName] = React.useState();
     const [placeholder, setPlaceholder] = React.useState();
+    const [useAsIndex, setUseAsIndex] = React.useState();
 
     const reset = React.useCallback(() => {
-      setName(element.name || "");
-      setPlaceholder(element.type === TemplateElementType.placeholder || false);
-    }, [element]);
+      setName(element.name ?? "");
+      setPlaceholder(
+        element.type === DefaultTemplate.templateElementType.placeholder ||
+          false
+      );
+      setUseAsIndex(isIndexElement || false);
+    }, [element, isIndexElement]);
 
     React.useEffect(() => {
       reset();
@@ -35,14 +49,19 @@ const ElementPopover = React.forwardRef(
 
       let newType;
       if (placeholder) {
-        newType = TemplateElementType.placeholder;
+        newType = DefaultTemplate.templateElementType.placeholder;
       } else {
-        newType = TemplateElementType.text_single;
+        newType = DefaultTemplate.templateElementType.text_single;
       }
 
       let newElementData = { ...element, name: name, type: newType };
 
-      onChangeElement(element.elementID, newElementData);
+      onChangeElement(element.id, newElementData);
+
+      if (useAsIndex !== isIndexElement) {
+        onChangeIndexElement(useAsIndex ? element.id : null);
+      }
+
       popupState.close();
     };
 
@@ -75,7 +94,7 @@ const ElementPopover = React.forwardRef(
             flexDirection: "column",
             justifyContent: "space-between",
             width: "300px",
-            height: "200px",
+            MinHeight: "200px",
             boxShadow: `inset 0px 0px 0px 4px ${element.color}`,
             padding: "8px",
           }}
@@ -107,6 +126,15 @@ const ElementPopover = React.forwardRef(
             <FormControlLabel
               control={
                 <Checkbox
+                  checked={useAsIndex}
+                  onChange={(e) => setUseAsIndex((prev) => !prev)}
+                />
+              }
+              label="Use as Index?"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
                   checked={placeholder}
                   onChange={(e) => setPlaceholder((prev) => !prev)}
                 />
@@ -127,7 +155,7 @@ const ElementPopover = React.forwardRef(
               justifyContent: "space-between",
             }}
           >
-            <IconButton onClick={() => onDeleteElement(element.elementID)}>
+            <IconButton onClick={() => onDeleteElement(element.id)}>
               <DeleteIcon />
             </IconButton>
             <Button onClick={handleSubmit}>Submit</Button>

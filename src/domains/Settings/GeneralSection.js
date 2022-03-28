@@ -6,7 +6,7 @@ import CustomTextField from "./CustomTextField";
 import CustomFormControlSetting from "./CustomFormControlSetting";
 
 // Context
-import { useGridState } from "../../context/GridState";
+import { useGridState } from "../../global/GridState";
 
 // Util
 import { getPrettyLocationLayout } from "../../utils";

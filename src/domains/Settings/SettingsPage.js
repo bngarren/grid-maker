@@ -13,8 +13,8 @@ import SecuritySection from "./SecuritySection";
 import { useDialog } from "../../components";
 
 // Context
-import { useSettings } from "../../context/Settings";
-import { useGridState } from "../../context/GridState";
+import { useSettings } from "../../global/Settings";
+import { useGridState } from "../../global/GridState";
 
 // Utility
 import {

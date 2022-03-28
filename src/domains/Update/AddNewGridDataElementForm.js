@@ -12,7 +12,7 @@ import { styled } from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
 
 // Context
-import { useGridState } from "../../context/GridState";
+import { useGridState } from "../../global/GridState";
 
 // Util
 import { APP_TEXT } from "../../utils";

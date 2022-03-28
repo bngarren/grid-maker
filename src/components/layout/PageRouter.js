@@ -8,11 +8,8 @@ import {
   TemplatePage,
 } from "../../domains";
 
-// Context
-import TemplateEditorProvider from "../../domains/Template/TemplateEditor";
-
 // Authentication
-import { useAuthStateContext } from "../../context/AuthState";
+import { useAuthStateContext } from "../../global/AuthState";
 import { UNAUTHENTICATED } from "../../api/Firebase";
 
 const PageRouter = () => {
@@ -48,9 +45,7 @@ const PageRouter = () => {
           path="/template"
           element={
             <RequireAuth>
-              <TemplateEditorProvider>
-                <TemplatePage />
-              </TemplateEditorProvider>
+              <TemplatePage />
             </RequireAuth>
           }
         />

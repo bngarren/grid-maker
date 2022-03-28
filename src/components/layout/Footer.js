@@ -10,7 +10,7 @@ import { ReactComponent as LogoBox } from "../../assets/logo_box_desaturated.svg
 import { ReactComponent as LogoText } from "../../assets/logo_text.svg";
 
 // Context
-import { useAuthStateContext } from "../../context/AuthState";
+import { useAuthStateContext } from "../../global/AuthState";
 
 // Login
 import { useLoginDialog } from "../../domains/Login/useLoginDialog";

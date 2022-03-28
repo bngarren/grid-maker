@@ -10,13 +10,14 @@ import ClearIcon from "@mui/icons-material/Clear";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
-import { useTemplateEditor } from "./TemplateEditor";
+// Reduce
+import { useSelector, useDispatch } from "react-redux";
+import { updateTemplateRowFillHeight } from "./templateEditorSlice";
 
 const TemplateRowMenu = React.forwardRef(
-  ({ popupState, index, onAddElement, ...props }, ref) => {
-    const { getRow, updateTemplateRowMeta } = useTemplateEditor();
-    const row = getRow(index);
-
+  ({ popupState, rowId, onAddElement, ...props }, ref) => {
+    const dispatch = useDispatch();
+    const row = useSelector((state) => state.templateEditor.rows.byId[rowId]);
     const reset = React.useCallback(() => {}, []);
 
     React.useEffect(() => {
@@ -32,10 +33,13 @@ const TemplateRowMenu = React.forwardRef(
       handleOnClose();
     };
 
-    const handleChangeHeightFactor = () => {
-      updateTemplateRowMeta(index, {
-        heightFactor: row.heightFactor * -1,
-      });
+    const handleChangeFillHeight = () => {
+      dispatch(
+        updateTemplateRowFillHeight({
+          rowId: rowId,
+          fillHeight: !row.fillHeight,
+        })
+      );
     };
 
     return (
@@ -85,8 +89,8 @@ const TemplateRowMenu = React.forwardRef(
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={row.heightFactor === -1}
-                  onChange={handleChangeHeightFactor}
+                  checked={row.fillHeight}
+                  onChange={handleChangeFillHeight}
                 />
               }
               label="Fill height?"

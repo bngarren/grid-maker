@@ -3,13 +3,25 @@ import * as React from "react";
 // MUI
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { styled } from "@mui/system";
-
 import MenuIcon from "@mui/icons-material/Menu";
 
+// Redux
+import { useSelector, useDispatch } from "react-redux";
+import {
+  swapTemplateRows,
+  updateTemplateRowHeight,
+} from "./templateEditorSlice";
+
+// Utility
+import { cloneDeep } from "lodash-es";
+
+// Popover
 import PopupState, { bindToggle, bindPopover } from "material-ui-popup-state";
 
 import useElements from "./useElements";
-import { useTemplateEditor } from "./TemplateEditor";
+
+// Components
+import SwapButton from "./SwapButton";
 import Element from "./Element";
 import TemplateRowMenu from "./TemplateRowMenu";
 
@@ -20,18 +32,23 @@ const StyledTemplateRowRoot = styled(Box, {
   slot: "root",
 })(({ theme }) => ({}));
 
-const TemplateRow = ({
-  templateRowIndex,
-  constraints,
-  MoveArrows,
-  notLastRow,
-}) => {
+const TemplateRow = ({ id, constraints, notLastRow }) => {
   const root = React.useRef();
 
-  const { getRow, getElementsForRowIndex, updateTemplateRowMeta } =
-    useTemplateEditor();
-  const { heightFactor } = getRow(templateRowIndex);
-  const elements = getElementsForRowIndex(templateRowIndex);
+  const dispatch = useDispatch();
+  const indexElement = useSelector(
+    (state) => state.templateEditor.indexElement
+  );
+  const row = useSelector((state) => state.templateEditor.rows.byId[id]);
+
+  /* Have to use lodash cloneDeep to get copy that doesn't mutate nested redux state 
+  Refer to: https://redux.js.org/usage/structuring-reducers/immutable-update-patterns
+  */
+  const elements = cloneDeep(
+    useSelector((state) =>
+      row.elements.map((_el) => state.templateEditor.elements.byId[_el])
+    )
+  );
 
   const {
     localElements,
@@ -41,20 +58,25 @@ const TemplateRow = ({
     resizeRight,
     resizeLeft,
     updateLocalElement,
-  } = useElements(templateRowIndex, elements, constraints);
+    setIndexElement,
+  } = useElements(row.id, elements, constraints);
 
-  React.useEffect(() => {
+  /* Listens to resize events of the root div of the row and stores them in state */
+  React.useLayoutEffect(() => {
     let resizeObserver = new ResizeObserver((entries) => {
-      updateTemplateRowMeta(templateRowIndex, {
-        heightPixel: entries[0].contentRect.height,
-      });
+      dispatch(
+        updateTemplateRowHeight({
+          rowId: row.id,
+          rowHeight: entries[0].contentRect.height,
+        })
+      );
     });
     resizeObserver.observe(root.current);
 
     return () => {
       resizeObserver.disconnect();
     };
-  }, [updateTemplateRowMeta, templateRowIndex]);
+  }, [row.id, dispatch]);
 
   return (
     <StyledTemplateRowRoot
@@ -65,22 +87,22 @@ const TemplateRow = ({
         flexDirection: "row",
         justifyContent: "space-between",
         //width: constraints.maxWidth,
-        height:
-          heightFactor === -1 ? "100%" : heightFactor * constraints.minHeight,
+        height: row.fillHeight ? "100%" : constraints.minHeight,
         minHeight: constraints.minHeight,
         borderBottom: notLastRow && "2px solid black",
       }}
     >
-      {localElements.map((el, idx) => {
+      {localElements?.map((el, idx) => {
         const prevElement = Boolean(elements[idx - 1]);
         const nextElement = Boolean(elements[idx + 1]);
 
         return (
           <Element
-            key={el.elementID}
+            key={el.id}
             ref={(domEl) => (refs.current[idx] = domEl)}
             element={el}
-            index={idx}
+            isIndexElement={el.id === indexElement}
+            handleUpdateIndexElement={setIndexElement}
             handleResizeLeft={resizeLeft}
             handleResizeRight={resizeRight}
             showResizeLeft={prevElement}
@@ -99,7 +121,9 @@ const TemplateRow = ({
           transform: "rotate(90deg)",
         }}
       >
-        {MoveArrows && MoveArrows}
+        {notLastRow && (
+          <SwapButton onClick={() => dispatch(swapTemplateRows(row.id))} />
+        )}
       </Box>
       <Box
         direction="row"
@@ -109,10 +133,10 @@ const TemplateRow = ({
           right: "-50px",
         }}
       >
-        <PopupState variant="popover" popupId={`rowMenu-${templateRowIndex}`}>
+        <PopupState variant="popover" popupId={`rowMenu-${row.id}`}>
           {(menuPopupState) => (
             <div>
-              <Tooltip title={`Edit Row ${templateRowIndex + 1}`}>
+              <Tooltip title={`Edit Row`}>
                 <IconButton {...bindToggle(menuPopupState)}>
                   <MenuIcon />
                 </IconButton>
@@ -120,7 +144,7 @@ const TemplateRow = ({
               <TemplateRowMenu
                 {...bindPopover(menuPopupState)}
                 popupState={menuPopupState}
-                index={templateRowIndex} // row index
+                rowId={row.id}
                 onAddElement={addLocalElement}
               />
             </div>

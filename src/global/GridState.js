@@ -1,7 +1,8 @@
 import * as React from "react";
 
-// Template
-import { useTemplate } from "./Template";
+// Redux
+import { useSelector, useDispatch } from "react-redux";
+import { updateGridData } from "./gridStateSlice";
 
 // Utility
 import useStable from "../hooks/useStable";
@@ -15,7 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 const GridStateContext = React.createContext();
 
 export default function GridStateProvider({ children }) {
-  const { gridTemplate } = useTemplate();
+  const gridTemplate = useSelector((state) => state.template);
   const [gridData, setGridData] = React.useState();
   const [gridIndex, setGridIndex] = React.useState();
 
@@ -110,7 +111,7 @@ export default function GridStateProvider({ children }) {
     /* 
     Merge this gridTemplate with gridData.     
     */
-    setGridData(mergeGridTemplateWithGridData(gridTemplate, stableGridData));
+    //setGridData(mergeGridTemplateWithGridData(gridTemplate, stableGridData));
   }, [gridTemplate, getStable]);
 
   const value = {};

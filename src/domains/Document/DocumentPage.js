@@ -2,8 +2,8 @@ import { PDFViewer } from "@react-pdf/renderer";
 
 import MyDocument from "./MyDocument";
 
-import { useSettings } from "../../context/Settings";
-import { useGridState } from "../../context/GridState";
+import { useSettings } from "../../global/Settings";
+import { useGridState } from "../../global/GridState";
 
 const DocumentPage = () => {
   const { settings } = useSettings();

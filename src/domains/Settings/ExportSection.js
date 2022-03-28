@@ -11,7 +11,7 @@ import CustomFormControlSetting from "./CustomFormControlSetting";
 import ExportList from "./ExportList";
 
 // Context
-import { useSettings } from "../../context/Settings";
+import { useSettings } from "../../global/Settings";
 
 /**
  * Section of SettingsPage that handles exporting the grid to JSON

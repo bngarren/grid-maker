@@ -1,12 +1,17 @@
+import * as React from "react";
+
 //MUI
-import { Box, IconButton, Button } from "@mui/material";
+import { Stack, Box, IconButton, Button, Alert } from "@mui/material";
 import { styled } from "@mui/system";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-import { useTemplateEditor } from "./TemplateEditor";
-import { useTemplate } from "../../context/Template";
+// Redux
+import { useSelector, useDispatch } from "react-redux";
+import { addTemplateRow } from "./templateEditorSlice";
+import { updateTemplate } from "../../global/gridStateSlice";
+
+// Components
 import TemplateRow from "./TemplateRow";
-import SwapButton from "./SwapButton";
 
 const GRIDBOX_CONSTRAINTS = {
   width: 700,
@@ -43,31 +48,52 @@ const StyledGridBoxRoot = styled(Box, {
 }));
 
 const TemplatePage = () => {
-  const { templateState, templateRows, addTemplateRow, swapRows } =
-    useTemplateEditor();
+  const templateEditorState = useSelector((state) => state.templateEditor);
+  const templateRows = templateEditorState.rows.allIds.map(
+    (rowId) => templateEditorState.rows.byId[rowId]
+  );
+  const dispatch = useDispatch();
 
-  const { gridTemplate, setGridTemplate } = useTemplate();
+  const [errors, setErrors] = React.useState([]);
+
+  React.useEffect(() => {
+    let newErrors = [];
+    if (templateEditorState.indexElement == null) {
+      newErrors.push("Missing index element");
+    }
+    if (templateEditorState.elements.allIds.length === 0) {
+      newErrors.push("Need at least 1 element");
+    }
+    setErrors(newErrors);
+  }, [templateEditorState]);
 
   const handleAddTemplateRow = () => {
     if (templateRows.length >= GRIDBOX_CONSTRAINTS.maxRows) {
       return;
     }
-    addTemplateRow({
-      widthPercent: 100,
-    });
-  };
-
-  const handleMoveTemplateRow = (rowIndex) => {
-    swapRows(rowIndex);
+    dispatch(
+      addTemplateRow({
+        widthPercent: 100,
+      })
+    );
   };
 
   const handleSaveTemplate = () => {
-    setGridTemplate(templateState);
+    // json.parse/stringify in order to remove nested references, i.e. deep copy
+    dispatch(updateTemplate(JSON.parse(JSON.stringify(templateEditorState))));
   };
 
   return (
     <div>
       <Button onClick={handleSaveTemplate}>Save</Button>
+      <Stack direction="column" spacing={0.5}>
+        {errors &&
+          errors.map((error, ei) => (
+            <Alert key={`${ei}-${error}`} severity="error">
+              {error}
+            </Alert>
+          ))}
+      </Stack>
       <StyledGridBoxRoot>
         <Box
           sx={{
@@ -82,14 +108,9 @@ const TemplatePage = () => {
             const notLastRow = templateRows.length - i > 1;
             return (
               <TemplateRow
-                key={tr.rowID}
-                templateRowIndex={i}
+                key={tr.id}
+                id={tr.id}
                 constraints={TEMPLATE_ROW_CONSTRAINTS}
-                MoveArrows={
-                  notLastRow ? (
-                    <SwapButton onClick={() => handleMoveTemplateRow(i)} />
-                  ) : null
-                }
                 notLastRow={notLastRow}
               />
             );
@@ -106,17 +127,27 @@ const TemplatePage = () => {
           </IconButton>
         </Box>
       </StyledGridBoxRoot>
-      <Box
-        sx={{
-          width: "100%",
-        }}
-      >
-        <pre style={{ textAlign: "left" }}>
-          <code>{JSON.stringify(templateState, null, 2)}</code>
-        </pre>
-      </Box>
+      <JSONPreview data={JSON.stringify(templateEditorState, null, 3)} />
     </div>
   );
 };
 
 export default TemplatePage;
+
+const JSONPreview = ({ data }) => {
+  return (
+    <Box
+      sx={{
+        margin: "40px auto 0px auto",
+        fontSize: "0.8rem",
+        backgroundColor: "rgba(255, 215, 0, 0.1)",
+        height: "400px",
+        overflow: "auto",
+      }}
+    >
+      <pre style={{ textAlign: "left" }}>
+        <code>{data}</code>
+      </pre>
+    </Box>
+  );
+};

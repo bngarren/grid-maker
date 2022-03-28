@@ -7,7 +7,7 @@ import StopIcon from "@mui/icons-material/Stop";
 import { useWatch } from "react-hook-form";
 
 // Context and utility
-import { useSettings } from "../../context/Settings";
+import { useSettings } from "../../global/Settings";
 import { getWidth } from "../Document/MyDocument";
 
 /* Styling */

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 // Context
-import { useAuthStateContext } from "../../context/AuthState";
+import { useAuthStateContext } from "../../global/AuthState";
 
 const LoginPage = () => {
   const { authState, userIsLoggedIn, signInWithEmailAndPassword, signOut } =

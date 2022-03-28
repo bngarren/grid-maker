@@ -1,5 +1,5 @@
 // Context
-import { useSettings } from "../context/Settings";
+import { useSettings } from "../global/Settings";
 
 /**
  * Custom hook that returns the keystroke/key of a given action from our settings

@@ -1,8 +1,8 @@
 import * as React from "react";
 import { render } from "../../test-utils";
 
-import GridDataElementActionsContext from "./GridDataElementActionsContext";
-import TableGridDataElements from "./TableGridDataElements";
+import GridDataElementActionsContext from "./GridDataObjectActionsContext";
+import TableGridDataElements from "./TableGridDataObjects";
 import { TEST_GRID_DATA } from "../../utils";
 
 const MockTableGridDataElements = ({ data, selectedKey }) => {

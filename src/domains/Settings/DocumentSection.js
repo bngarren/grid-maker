@@ -6,7 +6,7 @@ import CustomTextField from "./CustomTextField";
 import CustomFormControlSetting from "./CustomFormControlSetting";
 
 // Context
-import { useSettings } from "../../context/Settings";
+import { useSettings } from "../../global/Settings";
 
 const DocumentSection = ({ onSave = (f) => f }) => {
   /* Get Settings context */

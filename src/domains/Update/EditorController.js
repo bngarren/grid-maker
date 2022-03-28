@@ -29,7 +29,9 @@ import Editor from "./Editor";
 import { ButtonStandard } from "../../components";
 
 // Context
-import { useSettings } from "../../context/Settings";
+import { useSelector } from "react-redux";
+import useGridState from "../../global/useGridState";
+import { useSettings } from "../../global/Settings";
 
 // Util
 import { APP_TEXT } from "../../utils";
@@ -93,17 +95,20 @@ const StyledNavigateIconButton = styled(IconButton)(({ theme }) => ({
 }));
 
 const EditorController = ({
-  initialGridDataElementData,
   dirtyFormCallback = (f) => f,
   onChangeGridDataElement = (f) => f,
   onSave = (f) => f,
 }) => {
   const { settings, dispatchSettings } = useSettings();
 
-  const gridDataElementId = useRef(initialGridDataElementData?.id);
+  const selectedGDO = useSelector((state) => state.gridEditor.selectedGDO); // id
+  const { getGridDataObjectById } = useGridState();
+  const currentGridDataObject = getGridDataObjectById(selectedGDO);
+
+  const currentGridDataObjectIdRef = useRef(currentGridDataObject?.id);
 
   const form = useForm({
-    defaultValues: { ...initialGridDataElementData },
+    defaultValues: { ...currentGridDataObject },
   });
 
   const {
@@ -119,19 +124,19 @@ const EditorController = ({
     /* Dont reset anything if currently submitting form */
     if (!isSubmitting) {
       /* A new gridDataElement has been selected and passed in */
-      if (gridDataElementId.current !== initialGridDataElementData.id) {
-        reset({ ...initialGridDataElementData });
-        gridDataElementId.current = initialGridDataElementData.id;
+      if (currentGridDataObjectIdRef.current !== currentGridDataObject.id) {
+        reset({ ...currentGridDataObject });
+        currentGridDataObjectIdRef.current = currentGridDataObject.id;
       }
     }
-  }, [reset, initialGridDataElementData, isSubmitting]);
+  }, [reset, currentGridDataObject, isSubmitting]);
 
   /* Reset the formstate after a submit is successful */
   useEffect(() => {
     if (isSubmitSuccessful) {
-      reset({ ...initialGridDataElementData }, { keepSubmitCount: true });
+      reset({ ...currentGridDataObject }, { keepSubmitCount: true });
     }
-  }, [reset, initialGridDataElementData, isSubmitted, isSubmitSuccessful]);
+  }, [reset, currentGridDataObject, isSubmitted, isSubmitSuccessful]);
 
   /* Notify UpdatePage of isDirty status */
   useEffect(() => {
@@ -279,7 +284,7 @@ const EditorController = ({
             variant="h5"
             sx={{ fontSize: "1.2rem", color: "grey.200" }}
           >
-            {initialGridDataElementData.location || ""}
+            INDEX
           </Typography>
           <StyledNavigateIconButton
             disabled={isDirty}
@@ -347,7 +352,7 @@ const EditorController = ({
     </StyledToolbarBottom>
   );
 
-  if (initialGridDataElementData) {
+  if (currentGridDataObject) {
     return (
       <FormProvider {...form}>
         <DemoBox collapsed={demoBoxCollapsed} />

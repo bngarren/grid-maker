@@ -1,9 +1,9 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material/styles";
-import theme from "./context/Theme";
-import { SettingsProvider } from "./context/Settings";
-import GridStateProvider from "./context/GridState";
+import theme from "./global/Theme";
+import { SettingsProvider } from "./global/Settings";
+import GridStateProvider from "./global/GridState";
 import { BrowserRouter } from "react-router-dom";
 import { Firebase } from "./api/Firebase";
 import { config } from "./api/credentials";

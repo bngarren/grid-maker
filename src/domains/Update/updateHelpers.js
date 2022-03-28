@@ -19,12 +19,12 @@ export const doesLocationExistInGridData = (
 
 /** Helper function for finding next or previous index in given array, or 
 cycles to the end.
- * @param {array} arr Array of grid data, e.g. each index is a gridDataElement
- * @param {number} currentIndex Starting index, i.e. current gridDataElement in the editor
- * @param {boolean} reverse  If true, will go back a GDE. If false, will go forward
+ * @param {array} arr Array of grid data, e.g. each index is a gridDataObject
+ * @param {number} currentIndex Starting index, i.e. current gridDataObject in the editor
+ * @param {boolean} reverse  If true, will go back a GDO. If false, will go forward
  * @returns {number} The new index
  */
-export const getAdjacentGridDataElement = (
+export const getAdjacentGridDataObject = (
   arr,
   currentIndex,
   reverse = false

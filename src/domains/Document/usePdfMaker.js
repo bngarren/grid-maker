@@ -5,8 +5,8 @@ import { saveAs } from "file-saver";
 import MyDocument from "./MyDocument";
 
 //context
-import { useGridState } from "../../context/GridState";
-import { useSettings } from "../../context/Settings";
+import { useGridState } from "../../global/GridState";
+import { useSettings } from "../../global/Settings";
 
 const usePdfMaker = () => {
   const { settings } = useSettings();

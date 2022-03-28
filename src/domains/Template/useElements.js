@@ -1,13 +1,19 @@
 import * as React from "react";
 
-import { DefaultTemplateGenerator } from "../../context/Template";
-import { useTemplateEditor } from "./TemplateEditor";
+import DefaultTemplate from "./DefaultTemplate";
 
-const useElements = (templateRowIndex, initialValue, constraints) => {
+// Redux
+import { useDispatch } from "react-redux";
+import {
+  updateTemplateRowElements,
+  updateIndexElement,
+} from "./templateEditorSlice";
+
+/* This hook manages a local "working" state of template elements for a row.  */
+const useElements = (templateRowId, initialValue, constraints) => {
   const prevState = React.useRef(initialValue);
   const [elements, setElements] = React.useState(initialValue);
-
-  const { updateTemplateRowElements } = useTemplateEditor();
+  const dispatch = useDispatch();
 
   // Actual DOM elements - so we can get dynamic size info from the div's
   const refs = React.useRef([]);
@@ -20,17 +26,22 @@ const useElements = (templateRowIndex, initialValue, constraints) => {
     prevState.current = initialValue;
   }, [initialValue]);
 
-  /* Send update to Template Context when our local elements state has changed */
+  /* Send update to redux state templateEditorSlice when our local elements state has changed */
   React.useEffect(() => {
-    /* If our local elements state is actually different than the state within TemplateContext
-    (which we store in the prevState ref), then we will send a new update to TemplateContext */
+    /* If our local elements state is actually different than the state within redux
+    (which we store in the prevState ref), then we will send a new update to redux store */
 
     //console.log("prevElements", prevState.current);
     //console.log("currentElements", elements);
     if (JSON.stringify(prevState?.current) !== JSON.stringify(elements)) {
-      updateTemplateRowElements(templateRowIndex, elements);
+      dispatch(
+        updateTemplateRowElements({
+          rowId: templateRowId,
+          rowElements: elements,
+        })
+      );
     }
-  }, [elements, templateRowIndex, updateTemplateRowElements]);
+  }, [elements, dispatch, templateRowId]);
 
   const addElement = React.useCallback(() => {
     if (elements.length >= constraints.maxElements) {
@@ -44,7 +55,7 @@ const useElements = (templateRowIndex, initialValue, constraints) => {
       };
     });
     newElementsArray.push({
-      ...DefaultTemplateGenerator.element(),
+      ...DefaultTemplate.element(),
       widthPercent: newWidthPercent,
     });
     setElements(newElementsArray);
@@ -57,7 +68,7 @@ const useElements = (templateRowIndex, initialValue, constraints) => {
         newWidthPercent = roundToTwo(100 / (elements.length - 1));
       }
       const newElementsArray = elements
-        .filter((f) => f.elementID !== elementID)
+        .filter((f) => f.id !== elementID)
         .map((el) => {
           return {
             ...el,
@@ -70,8 +81,12 @@ const useElements = (templateRowIndex, initialValue, constraints) => {
   );
 
   const handleResizeRight = React.useCallback(
-    (e, elementIndex) => {
+    (e, elementID) => {
       e.preventDefault();
+
+      const elementIndex = elements.findIndex((f) => f.id === elementID);
+      if (elementIndex === -1) return;
+
       const width_delta = e.shiftKey
         ? constraints.widthDelta * 2
         : constraints.widthDelta;
@@ -103,8 +118,12 @@ const useElements = (templateRowIndex, initialValue, constraints) => {
   );
 
   const handleResizeLeft = React.useCallback(
-    (e, elementIndex) => {
+    (e, elementID) => {
       e.preventDefault();
+
+      const elementIndex = elements.findIndex((f) => f.id === elementID);
+      if (elementIndex === -1) return;
+
       const width_delta = e.shiftKey
         ? constraints.widthDelta * 2
         : constraints.widthDelta;
@@ -139,11 +158,18 @@ const useElements = (templateRowIndex, initialValue, constraints) => {
   const updateElement = React.useCallback(
     (elementID, newElementData) => {
       let updatedElements = elements.map((el) => {
-        return el.elementID === elementID ? { ...el, ...newElementData } : el;
+        return el.id === elementID ? { ...el, ...newElementData } : el;
       });
       setElements(updatedElements);
     },
     [elements]
+  );
+
+  const setIndexElement = React.useCallback(
+    (elementID) => {
+      dispatch(updateIndexElement(elementID));
+    },
+    [dispatch]
   );
 
   return {
@@ -154,6 +180,7 @@ const useElements = (templateRowIndex, initialValue, constraints) => {
     resizeRight: handleResizeRight,
     resizeLeft: handleResizeLeft,
     updateLocalElement: updateElement,
+    setIndexElement: setIndexElement,
   };
 };
 export default useElements;

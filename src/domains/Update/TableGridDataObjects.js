@@ -13,10 +13,8 @@ import {
   Typography,
   Paper,
   Radio,
-  Tooltip,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import GroupIcon from "@mui/icons-material/Group";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { styled } from "@mui/system";
 
@@ -33,8 +31,10 @@ import ActionsPopover from "./ActionsPopover";
 // Components
 import AddNewGridDataElementForm from "./AddNewGridDataElementForm";
 
-// Context
-import GridDataElementActionsContext from "./GridDataElementActionsContext";
+// Context/Redux
+import { useSelector } from "react-redux";
+import useGridState from "../../global/useGridState";
+import GridDataObjectActionsContext from "./GridDataObjectActionsContext";
 
 // Defaults //TODO Need to put this in Settings
 const ROWS_PER_PAGE = 15;
@@ -68,30 +68,6 @@ const StyledTableCell = styled(TableCell, {
       transition: "color 0.1s linear",
       backgroundColor: theme.palette.primary.main,
     }),
-}));
-
-const StyledTypographyLocation = styled(Typography, {
-  name: "TableGridDataElements",
-  slot: "location",
-  shouldForwardProp: (prop) => prop !== "isSelected",
-})(({ isSelected, theme }) => ({
-  color: theme.palette.primary.main,
-  fontWeight: "bold",
-  ...(isSelected && {
-    color: theme.palette.secondary.light,
-  }),
-}));
-
-const StyledTypographyPatientName = styled(Typography, {
-  name: "TableGridDataElements",
-  slot: "patientName",
-})(({ theme }) => ({
-  [theme.breakpoints.up("lg")]: {
-    fontSize: "0.95rem",
-  },
-  [theme.breakpoints.down("lg")]: {
-    fontSize: "0.90rem",
-  },
 }));
 
 const StyledTablePagination = styled(TablePagination, {
@@ -152,7 +128,18 @@ const StyledMenuOpenIcon = styled(MenuOpenIcon)(({ theme }) => ({
   color: theme.palette.primary.light,
 }));
 
-const TableGridDataElements = ({ data, selectedKey }) => {
+const TableGridDataObjects = ({ selectedGDO }) => {
+  const { gridData } = useGridState();
+  const selectedKey = useSelector((state) =>
+    state.gridState.gridData.find((gdo) => gdo.id === selectedGDO)
+  );
+  const indexElement = useSelector(
+    (state) =>
+      state.gridState.template.elements.byId[
+        state.gridState.template.indexElement
+      ]
+  );
+
   // table pagination
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(ROWS_PER_PAGE);
@@ -166,11 +153,11 @@ const TableGridDataElements = ({ data, selectedKey }) => {
   };
 
   /* Watches for changes in selectedKey and picks the correct paginated page that contains
-  that gridDataElement. E.g. when using the navigation arrows and you move to a gridDataElement that is on
+  that gridDataObject. E.g. when using the navigation arrows and you move to a gridDataObject that is on
   a different paginated page */
   useEffect(() => {
     // Page should be set so that selectedKey is within range of [page*rowsPerPage, rowsPerPage + rowsPerPage - 1]
-    const rowsTotal = data.length;
+    const rowsTotal = gridData.length;
     const numOfPage = Math.ceil(rowsTotal / rowsPerPage);
     let newPage = 0;
     for (let i = 0; i < numOfPage; i++) {
@@ -183,54 +170,35 @@ const TableGridDataElements = ({ data, selectedKey }) => {
       }
     }
     setPage(newPage);
-  }, [selectedKey, data.length, rowsPerPage]);
-
-  const columnSizes = {
-    location: getLocationCharSize(data),
-    team: getTeamCharSize(data),
-  };
+  }, [selectedKey, gridData.length, rowsPerPage]);
 
   return (
     <TableContainer component={Paper}>
       <Table aria-label="table of items" sx={{ tableLayout: "fixed" }}>
         <TableHead>
-          {data?.length !== 0 ? (
+          {gridData?.length !== 0 ? (
             <TableRow data-testid="header row with info">
-              <StyledTableCellHeader
-                sx={{
-                  width: `${columnSizes.location * 1.7}ch`,
-                }}
-              >
-                Location
-              </StyledTableCellHeader>
-              <StyledTableCellHeader>{/* Name */}</StyledTableCellHeader>
-              <StyledTableCellHeader
-                sx={{ width: `${columnSizes.team * 1.5}ch` }}
-              >
-                <Tooltip title="Team" placement="top">
-                  <GroupIcon sx={{ verticalAlign: "middle" }} />
-                </Tooltip>
-              </StyledTableCellHeader>
+              <StyledTableCellHeader>{indexElement.name}</StyledTableCellHeader>
+              <StyledTableCellHeader></StyledTableCellHeader>
               <StyledTableCellHeader sx={{ width: "80px" }} />
             </TableRow>
           ) : (
             <TableRow data-testid="header row without info">
-              <StyledTableCellHeader colSpan={4} />
+              <StyledTableCellHeader colSpan={3} />
             </TableRow>
           )}
         </TableHead>
         <MyTableBody
-          data={data}
+          data={gridData}
           page={page}
           rowsPerPage={rowsPerPage}
           selectedKey={selectedKey}
-          columnSizes={columnSizes}
         />
       </Table>
       <StyledTablePagination
         rowsPerPageOptions={[5, 15, 30]}
         component="div"
-        count={data.length}
+        count={gridData.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -241,11 +209,11 @@ const TableGridDataElements = ({ data, selectedKey }) => {
   );
 };
 
-const MyTableBody = ({ data, page, rowsPerPage, selectedKey, columnSizes }) => {
+const MyTableBody = ({ data, page, rowsPerPage, selectedKey }) => {
   const MyInputTableRow = (
     <TableRow>
-      <StyledTableCell component="th" scope="row" align="right" colSpan={4}>
-        <AddNewGridDataElementForm />
+      <StyledTableCell component="th" scope="row" align="right" colSpan={3}>
+        {/* <AddNewGridDataElementForm /> */}
       </StyledTableCell>
     </TableRow>
   );
@@ -256,7 +224,7 @@ const MyTableBody = ({ data, page, rowsPerPage, selectedKey, columnSizes }) => {
         {data?.length !== 0 ? (
           data
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((value, key) => {
+            .map((gdo, key) => {
               let adjustedKey = key + page * rowsPerPage; // the key resets to index 0 for every pagination page
               const isSelected = adjustedKey === selectedKey;
 
@@ -264,15 +232,14 @@ const MyTableBody = ({ data, page, rowsPerPage, selectedKey, columnSizes }) => {
                 <MyTableRow
                   adjustedKey={adjustedKey}
                   isSelected={isSelected}
-                  key={`MyTableRow-${value.id}`}
-                  value={value}
-                  columnSizes={columnSizes}
+                  key={`MyTableRow-${gdo.id}`}
+                  gdo={gdo}
                 />
               );
             })
         ) : (
           <TableRow>
-            <TableCell scope="row" colSpan={4}>
+            <TableCell scope="row" colSpan={3}>
               {APP_TEXT.addFirstGridDataElementPrompt}
               <Link to="/settings">{APP_TEXT.createLayoutLink}</Link>
             </TableCell>
@@ -284,92 +251,35 @@ const MyTableBody = ({ data, page, rowsPerPage, selectedKey, columnSizes }) => {
   );
 };
 
-const MyTableRow = memo(function MyTableRow({
-  adjustedKey,
-  isSelected,
-  value,
-  columnSizes,
-}) {
-  const isEmptyGridDataElement = isGridDataElementEmpty(value);
-
-  const getPatientName = () => {
-    if (value == null) return "";
-    const lastName = value.lastName || "";
-    const firstName = value.firstName || "";
-    return `${lastName}${lastName && firstName && ", "}${firstName}`;
-  };
-
+const MyTableRow = memo(function MyTableRow({ adjustedKey, isSelected, gdo }) {
   return (
-    <TableRow key={value.id} hover selected={isSelected}>
+    <TableRow key={gdo.id} hover selected={isSelected}>
       <StyledTableCell
         component="th"
         scope="row"
         align="center"
         isSelected={isSelected}
       >
-        <StyledTypographyLocation
-          aria-label="heading for location"
-          variant="h6"
-          isSelected={isSelected}
-          sx={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            fontSize: columnSizes.location > 3 ? "0.90rem" : "1rem",
-          }}
-        >
-          {value.location}
-        </StyledTypographyLocation>
+        {gdo.indexElementValue || "#"}
       </StyledTableCell>
-      <StyledTableCell align="left" isSelected={isSelected}>
-        <StyledTypographyPatientName
-          variant="body1"
-          sx={{
-            fontWeight: isSelected ? "fontWeightBold" : "fontWeightRegular",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {getPatientName()}
-        </StyledTypographyPatientName>
-      </StyledTableCell>
-      <StyledTableCell align="center">
-        <Typography
-          variant="body1"
-          sx={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            fontSize: columnSizes.team > 4 && "0.85rem",
-          }}
-        >
-          {value.team}
-        </Typography>
-      </StyledTableCell>
+      <StyledTableCell>{gdo.elements[1].value}</StyledTableCell>
       <StyledTableCell>
-        <GridDataElementActions
+        <GridDataObjectActions
           isSelected={isSelected}
-          location={value.location}
-          gridDataElementKey={adjustedKey}
-          isEmptyGridDataElement={isEmptyGridDataElement}
+          gridDataObjectId={gdo.id}
         />
       </StyledTableCell>
     </TableRow>
   );
 });
 
-const GridDataElementActions = memo(function GridDataElementActions({
+const GridDataObjectActions = memo(function GridDataObjectActions({
   isSelected,
-  location,
-  gridDataElementKey,
-  isEmptyGridDataElement,
+  gridDataObjectId,
 }) {
-  const {
-    gridDataElementActionEdit,
-    gridDataElementActionClear,
-    gridDataElementActionDelete,
-  } = useContext(GridDataElementActionsContext);
+  const { gdoActionsEdit, gdoActionsDelete, gdoActionsClear } = useContext(
+    GridDataObjectActionsContext
+  );
 
   // Popover - using a hook from material-ui-popup-state package
   const popupState = usePopupState({
@@ -387,17 +297,14 @@ const GridDataElementActions = memo(function GridDataElementActions({
         <>
           <Radio
             checked={isSelected}
-            onClick={() => gridDataElementActionEdit(gridDataElementKey)}
+            onClick={gdoActionsEdit(gridDataObjectId)}
             sx={{ ...buttonPaddingSx }}
-            inputProps={{
-              "aria-label": `toggle selection for ${location}`,
-            }}
           />
         </>
       }
       {
         <StyledMenuIconButton
-          onClick={(e) => handleOnClickMenu(e, gridDataElementKey)}
+          onClick={(e) => handleOnClickMenu(e, gridDataObjectId)}
           size="large"
           sx={{
             ...buttonPaddingSx,
@@ -412,10 +319,9 @@ const GridDataElementActions = memo(function GridDataElementActions({
       }
       <ActionsPopover
         popupState={popupState}
-        key={gridDataElementKey}
-        withEmptyGridDataElement={isEmptyGridDataElement}
-        onSelectDelete={() => gridDataElementActionDelete(gridDataElementKey)}
-        onSelectClear={() => gridDataElementActionClear(gridDataElementKey)}
+        gdoId={gridDataObjectId}
+        onSelectDelete={gdoActionsDelete(gridDataObjectId)}
+        onSelectClear={gdoActionsClear(gridDataObjectId)}
       />
     </StyledActionsDiv>
   );
@@ -446,4 +352,4 @@ function getTeamCharSize(data) {
   })();
 }
 
-export default TableGridDataElements;
+export default TableGridDataObjects;

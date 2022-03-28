@@ -11,7 +11,6 @@ const StyledMenuItem = styled(MenuItem)(() => ({
 
 const ActionsPopover = ({
   popupState,
-  withEmptyGridDataElement,
   onSelectDelete = (f) => f,
   onSelectClear = (f) => f,
 }) => {
@@ -31,11 +30,9 @@ const ActionsPopover = ({
         anchorOrigin={{ vertical: "center", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "left" }}
       >
-        {!withEmptyGridDataElement && (
-          <StyledMenuItem onClick={handleSelectClear} key="clear">
-            Clear data
-          </StyledMenuItem>
-        )}
+        <StyledMenuItem onClick={handleSelectClear} key="clear">
+          Clear data
+        </StyledMenuItem>
         <StyledMenuItem onClick={handleSelectDelete} key="delete">
           Remove item
         </StyledMenuItem>

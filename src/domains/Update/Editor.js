@@ -16,7 +16,7 @@ import ContingencyInput from "./ContingencyInput";
 import SnippetPopover from "./SnippetPopover";
 
 // Context
-import { useSettings } from "../../context/Settings";
+import { useSettings } from "../../global/Settings";
 
 // Util
 import { getCursorPos, setCursorPos } from "../../utils/CursorPos";

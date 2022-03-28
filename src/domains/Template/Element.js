@@ -11,7 +11,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import PopupState, { bindToggle, bindPopover } from "material-ui-popup-state";
 
 import ElementPopover from "./ElementPopover";
-import { TemplateElementType } from "../../context/Template";
+import DefaultTemplate from "./DefaultTemplate";
 
 /* Styling */
 const StyledElementRoot = styled(Box, {
@@ -28,7 +28,8 @@ const Element = React.forwardRef(
   (
     {
       element,
-      index,
+      isIndexElement,
+      handleUpdateIndexElement,
       handleResizeLeft,
       handleResizeRight,
       showResizeLeft,
@@ -41,11 +42,11 @@ const Element = React.forwardRef(
   ) => {
     const color1 = alpha(element.color, 0.3);
     const color2 = alpha(element.color, 0.8);
-    const isPlaceholder = element.type === TemplateElementType.placeholder;
+    const isPlaceholder =
+      element.type === DefaultTemplate.templateElementType.placeholder;
     return (
       <StyledElementRoot
         ref={ref}
-        name={`templateRowElement-${index}`}
         sx={{
           width: `${element.widthPercent}%`,
           height: "100%",
@@ -58,14 +59,11 @@ const Element = React.forwardRef(
         }}
       >
         {showResizeLeft && (
-          <IconButton onClick={(e) => handleResizeLeft(e, index)}>
+          <IconButton onClick={(e) => handleResizeLeft(e, element.id)}>
             <ArrowLeftIcon />
           </IconButton>
         )}
-        <PopupState
-          variant="popover"
-          popupId={`elementPopover-${element.elementID}`}
-        >
+        <PopupState variant="popover" popupId={`elementPopover-${element.id}`}>
           {(popupState) => (
             <div>
               <Tooltip
@@ -86,7 +84,8 @@ const Element = React.forwardRef(
                 {...bindPopover(popupState)}
                 popupState={popupState}
                 element={element}
-                index={index} // element index
+                isIndexElement={isIndexElement}
+                onChangeIndexElement={handleUpdateIndexElement}
                 onChangeElement={handleUpdateElement}
                 onDeleteElement={handleRemoveElement}
               />
@@ -94,7 +93,7 @@ const Element = React.forwardRef(
           )}
         </PopupState>
         {showResizeRight && (
-          <IconButton onClick={(e) => handleResizeRight(e, index)}>
+          <IconButton onClick={(e) => handleResizeRight(e, element.id)}>
             <ArrowRightIcon />
           </IconButton>
         )}

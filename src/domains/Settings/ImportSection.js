@@ -10,7 +10,7 @@ import { useImporter } from "../../domains/IO/useImporter";
 import ImportList from "./ImportList";
 
 // GridData context
-import { useGridState } from "../../context/GridState";
+import { useGridState } from "../../global/GridState";
 
 const ImportSection = () => {
   /* Use this hook to updateGridData once new data is imported */

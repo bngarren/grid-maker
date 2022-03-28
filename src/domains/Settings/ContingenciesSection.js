@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 import ContingencyOptionsEditor from "./ContingencyOptionsEditor";
 
 // Context
-import { useSettings } from "../../context/Settings";
+import { useSettings } from "../../global/Settings";
 
 const ContingenciesSection = ({ onSave = (f) => f }) => {
   /* Get Settings context */

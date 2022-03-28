@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 
 // Context
-import { useAuthStateContext } from "../../context/AuthState";
+import { useAuthStateContext } from "../../global/AuthState";
 
 const LoginForm = ({ onLoginSuccess = (f) => f }) => {
   const { signInWithEmailAndPassword } = useAuthStateContext();

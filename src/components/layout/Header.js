@@ -34,8 +34,8 @@ import { uniqueId } from "lodash-es";
 import { useMatch, useNavigate } from "react-router-dom";
 
 // Context
-import { useAuthStateContext } from "../../context/AuthState";
-import { useSettings } from "../../context/Settings";
+import { useAuthStateContext } from "../../global/AuthState";
+import { useSettings } from "../../global/Settings";
 
 // hooks
 import usePdfMaker from "../../domains/Document/usePdfMaker";
