@@ -24,6 +24,7 @@ const UpdatePage = () => {
     addNewGridDataObject,
     clearGridDataObject,
     deleteGridDataObject,
+    updateGridDataObject,
   } = useGridState();
 
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ const UpdatePage = () => {
   const navigateAdjacentGridDataObject = React.useCallback(
     async (reverse) => {
       let proceed = true;
-      const selectedIndex = gridData.findIndex((g) => g.id === selectedGDO);
+      const selectedIndex = gridData.findIndex((g) => g.id === selectedGDO.id);
       const gdo = gridData[selectedIndex];
       if (dirtyEditorController.current) {
         proceed = false;
@@ -61,9 +62,9 @@ const UpdatePage = () => {
 
       if (proceed) {
         dispatch(
-          updateSelectedGDO({
-            id: getAdjacentGridDataObject(gridData, selectedIndex, reverse),
-          })
+          updateSelectedGDO(
+            getAdjacentGridDataObject(gridData, selectedIndex, reverse)
+          )
         );
       }
     },
@@ -77,9 +78,9 @@ const UpdatePage = () => {
   const handleGridDataObjectEdit = React.useCallback(
     (gdoId) => async () => {
       let proceed = true;
+      const gdo = gridData.find((g) => g.id === gdoId);
       if (dirtyEditorController.current) {
         // Show a confirm dialog if there is data that isn't saved
-        const gdo = gridData.find((g) => g.id === gdoId);
         const dialogTemplate = {
           title: "There is unsaved data for this location",
           content: `${gdo.id}`,
@@ -88,12 +89,12 @@ const UpdatePage = () => {
         proceed = res;
       }
       if (proceed) {
-        /* Go ahead with changing the selectedKey  */
-        if (selectedGDO === gdoId) {
-          // re-clicked on the same gridDataElement
-          dispatch(updateSelectedGDO({ id: null }));
+        /* Go ahead with changing the selectedGDO  */
+        if (selectedGDO?.id === gdoId) {
+          // re-clicked on the same gridDataObject
+          dispatch(updateSelectedGDO(null));
         } else {
-          dispatch(updateSelectedGDO({ id: gdoId }));
+          dispatch(updateSelectedGDO(gdo));
         }
       }
     },
@@ -144,10 +145,21 @@ const UpdatePage = () => {
 
       if (proceed) {
         deleteGridDataObject(gdoId);
-        dispatch(updateSelectedGDO({ id: null }));
+        dispatch(updateSelectedGDO(null));
       }
     },
     [gridData, deleteGridDataObject, dispatch, confirm]
+  );
+
+  /**
+   * Handles the Save action
+   */
+  const onEditorControllerSave = React.useCallback(
+    async (editorData) => {
+      updateGridDataObject(selectedGDO.id, editorData);
+      return true;
+    },
+    [updateGridDataObject, selectedGDO]
   );
 
   const gridDataObjectActions = React.useMemo(
@@ -169,7 +181,7 @@ const UpdatePage = () => {
         <Grid item lg={4} md={5} sm={10} xs={12} sx={{ py: 0, px: 1, mb: 1 }}>
           <button onClick={addNewGridDataObject}>Add new GDO</button>
           <GridDataObjectActionsContext.Provider value={gridDataObjectActions}>
-            <TableGridDataObjects selectedGDO={selectedGDO} />
+            <TableGridDataObjects />
           </GridDataObjectActionsContext.Provider>
         </Grid>
         <Grid item lg md sm={0} xs>
@@ -178,15 +190,8 @@ const UpdatePage = () => {
               <EditorController
                 dirtyFormCallback={handleDirtyEditor}
                 onNavigateGridDataObject={navigateAdjacentGridDataObject}
-                onSave={(f) => f}
+                onSave={onEditorControllerSave}
               />
-              <pre>
-                {JSON.stringify(
-                  gridData?.find((g) => g.id === selectedGDO),
-                  null,
-                  2
-                )}
-              </pre>
             </>
           )}
         </Grid>

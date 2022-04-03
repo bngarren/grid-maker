@@ -31,10 +31,10 @@ export const getAdjacentGridDataObject = (
 ) => {
   const newIndex = reverse ? currentIndex - 1 : currentIndex + 1;
   if (newIndex < 0) {
-    return arr.length - 1;
+    return arr[arr.length - 1];
   }
   if (newIndex > arr.length - 1) {
-    return 0;
+    return arr[0];
   }
-  return newIndex;
+  return arr[newIndex];
 };

@@ -7,7 +7,7 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
-import { addTemplateRow } from "./templateEditorSlice";
+import { setTemplate, addTemplateRow } from "./templateEditorSlice";
 import { updateTemplate } from "../../global/gridStateSlice";
 
 // Components
@@ -48,6 +48,7 @@ const StyledGridBoxRoot = styled(Box, {
 }));
 
 const TemplatePage = () => {
+  const gridStateTemplate = useSelector((state) => state.gridState.template);
   const templateEditorState = useSelector((state) => state.templateEditor);
   const templateRows = templateEditorState.rows.allIds.map(
     (rowId) => templateEditorState.rows.byId[rowId]
@@ -55,6 +56,14 @@ const TemplatePage = () => {
   const dispatch = useDispatch();
 
   const [errors, setErrors] = React.useState([]);
+
+  // Use the gridState template on mount of TemplatePage
+  React.useEffect(() => {
+    if (gridStateTemplate) {
+      dispatch(setTemplate(gridStateTemplate));
+    }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   React.useEffect(() => {
     let newErrors = [];

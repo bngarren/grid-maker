@@ -1,6 +1,10 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import DefaultTemplate from "./DefaultTemplate";
 
+const _setTemplate = (state, { payload }) => {
+  return payload;
+};
+
 const _addRow = (state, action) => {
   const newElement = {
     ...DefaultTemplate.element(),
@@ -111,6 +115,7 @@ export const templateEditorSlice = createSlice({
     ...DefaultTemplate.template(),
   },
   reducers: {
+    setTemplate: _setTemplate,
     addTemplateRow: _addRow,
     swapTemplateRows: _swapRows,
     updateTemplateRowHeight: _updateRowHeight,
@@ -122,6 +127,7 @@ export const templateEditorSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  setTemplate,
   addTemplateRow,
   swapTemplateRows,
   updateTemplateRowHeight,

@@ -5,10 +5,9 @@ import {
   View,
   StyleSheet,
   Font,
-  Svg,
-  Rect,
 } from "@react-pdf/renderer";
 
+// Font
 import RobotoRegular from "../../assets/fonts/roboto/roboto-v27-latin-regular.woff";
 import Roboto700 from "../../assets/fonts/roboto/roboto-v27-latin-700.woff";
 
@@ -27,6 +26,7 @@ Font.register({
 
 Font.registerHyphenationCallback((word) => [word]);
 
+// Styling
 const pdfStyles = StyleSheet.create({
   page: {
     backgroundColor: "white",
@@ -42,22 +42,13 @@ const pdfStyles = StyleSheet.create({
     flexGrow: 1,
     textAlign: "center",
   },
-  censusRoot: {
-    fontSize: "8pt",
-    alignSelf: "center",
-    flexBasis: "20%",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingRight: "5pt",
-  },
-  gridListRoot: {
+  gridRoot: {
     display: "flex",
     alignItems: "stretch",
     flexDirection: "column",
     marginTop: "2pt",
   },
-  gridListRow: {
+  gridRow: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-evenly",
@@ -76,88 +67,17 @@ const pdfStyles = StyleSheet.create({
     fontFamily: "Roboto",
     marginTop: "-1pt",
   },
+  gridBoxRow: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    width: "100%",
+  },
+  gridBoxRowElement: {
+    padding: "1pt",
+  },
   removeLeftBorder: {
     borderLeft: "0",
-  },
-  gridBoxHeader: {
-    display: "flex",
-    flexDirection: "row",
-    width: "100%",
-    borderBottom: "1pt solid black",
-  },
-  gridBoxHeaderLocation: {
-    marginRight: "2pt",
-    paddingLeft: "3pt",
-    paddingRight: "3pt",
-    borderRight: "1pt solid black",
-    fontSize: "8.5pt",
-    fontWeight: "bold",
-  },
-  gridBoxHeaderName: {
-    flexGrow: "4",
-    alignSelf: "center",
-  },
-  gridBoxHeaderTeam: {
-    marginLeft: "2pt",
-    paddingLeft: "3pt",
-    paddingRight: "3pt",
-    borderLeft: "1pt solid black",
-    minWidth: "11pt",
-    alignSelf: "center",
-    fontSize: "8.5pt",
-  },
-  gridBoxBodySummary: {
-    fontSize: "7pt",
-    marginBottom: "1.5pt",
-  },
-  gridBoxBodyContingencies: {
-    display: "flex",
-    flexDirection: "row",
-    fontSize: "6pt",
-    fontWeight: "bold",
-    justifyContent: "flex-start",
-    flexWrap: "wrap",
-    alignContent: "center",
-    marginBottom: "1.5pt",
-  },
-  gridBoxBodyContingencyItem: {
-    border: "1pt solid #9a9a9a",
-    borderRadius: "2pt",
-    padding: "1.5pt 0.5pt 0pt 2pt",
-    marginTop: "0.5pt",
-    marginRight: "2pt",
-  },
-  gridBoxBody: {
-    fontSize: "6pt",
-    padding: "2pt 5pt 5pt 2pt",
-  },
-  gridBoxNestedContentSectionRoot: {
-    marginTop: "1.5pt",
-    fontSize: "6.5pt",
-  },
-  gridBoxNestedContentTopText: {
-    minHeight: "5pt",
-  },
-  gridBoxNestedContentTitle: {
-    fontWeight: "bold",
-  },
-  gridBoxNestedContentItemRoot: {
-    display: "flex",
-    flexDirection: "row",
-    marginLeft: "5pt",
-  },
-  gridBoxNestedContentItemText: {
-    marginLeft: "3pt",
-  },
-  gridBoxBottomText: {
-    position: "absolute",
-    bottom: 0,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    width: "100%",
-    fontSize: "7pt",
-    padding: "2pt 4pt 2pt 2pt",
   },
   bold: {
     fontWeight: "bold",
@@ -184,9 +104,8 @@ export const getWidth = (colsPerPage, factor = 1) => {
   return res.toString() + "pt";
 };
 
-const MyDocument = ({ locationLayout, title, colsPerPage, data, census }) => {
-  const locations = locationLayout.length;
-
+const MyDocument = ({ title, colsPerPage, template, data }) => {
+  const totalGDO = data.length;
   const getMatrix = (r, c) => {
     let matrix = [];
     let counter = 0;
@@ -195,14 +114,14 @@ const MyDocument = ({ locationLayout, title, colsPerPage, data, census }) => {
       matrix[i] = [];
       for (let j = 0; j < c; j++) {
         // for each column
-        matrix[i][j] = locationLayout[counter];
+        matrix[i][j] = data[counter];
         counter++;
       }
     }
     return matrix;
   };
 
-  const matrix = getMatrix(Math.ceil(locations / colsPerPage), colsPerPage);
+  const matrix = getMatrix(Math.ceil(totalGDO / colsPerPage), colsPerPage);
 
   return (
     <Document>
@@ -211,45 +130,23 @@ const MyDocument = ({ locationLayout, title, colsPerPage, data, census }) => {
           <View style={pdfStyles.titleRoot}>
             <Text>{title || " "}</Text>
           </View>
-
-          <View style={pdfStyles.censusRoot}>
-            {census ? (
-              <>
-                <Text>{`${census.filledTotal}/${census.total}`} </Text>
-                {census.teamTotals.map((t) => {
-                  return (
-                    <Text key={t.id}>
-                      <Text style={pdfStyles.bold}>{t.id}</Text>
-                      {`: ${t.value}`}
-                    </Text>
-                  );
-                })}
-              </>
-            ) : (
-              <></>
-            )}
-          </View>
         </View>
-        <View style={pdfStyles.gridListRoot}>
+        <View style={pdfStyles.gridRoot}>
           {matrix.map((row, rIndex) => {
             return (
               <View
-                style={pdfStyles.gridListRow}
+                style={pdfStyles.gridRow}
                 wrap={false}
                 key={`row-${rIndex}`}
               >
-                {row.map((box, cIndex) => {
-                  const objIndex = data.findIndex(
-                    (obj) => obj.location === box
-                  );
+                {row.map((gdo, cIndex) => {
                   return (
                     <GridBox
-                      gridDateElementData={
-                        objIndex >= 0 ? data[objIndex] : null
-                      }
+                      template={template}
+                      gridDataObject={gdo}
                       width={getWidth(colsPerPage)}
                       removeLeftBorder={cIndex !== 0}
-                      key={`grid-${cIndex}-${box}`}
+                      key={`row-${rIndex}-col-${cIndex}`}
                     />
                   );
                 })}
@@ -262,8 +159,8 @@ const MyDocument = ({ locationLayout, title, colsPerPage, data, census }) => {
   );
 };
 
-const GridBox = ({ gridDateElementData, width, removeLeftBorder }) => {
-  if (gridDateElementData) {
+const GridBox = ({ template, gridDataObject, width, removeLeftBorder }) => {
+  if (gridDataObject) {
     return (
       <View
         style={[
@@ -275,91 +172,27 @@ const GridBox = ({ gridDateElementData, width, removeLeftBorder }) => {
           },
         ]}
       >
-        <View style={pdfStyles.gridBoxHeader}>
-          <View style={pdfStyles.gridBoxHeaderLocation}>
-            <Text>{gridDateElementData.location || " "}</Text>
+        {template?.rows.allIds.map((rowId) => (
+          <View key={rowId} style={pdfStyles.gridBoxRow}>
+            {template?.rows.byId[rowId].elements.map((rel) => {
+              const templateElement = template?.elements.byId[rel];
+              const gdoElement = gridDataObject?.elements.find(
+                (f) => f.id === rel
+              );
+              return (
+                <View
+                  key={rel}
+                  style={[
+                    pdfStyles.gridBoxRowElement,
+                    { width: `${templateElement.widthPercent}%` },
+                  ]}
+                >
+                  <Text>{gdoElement.value ?? "null"}</Text>
+                </View>
+              );
+            })}
           </View>
-          <View style={pdfStyles.gridBoxHeaderName}>
-            <Text>
-              {gridDateElementData.lastName || " "}
-              {gridDateElementData.lastName &&
-                gridDateElementData.firstName &&
-                ", "}
-              {gridDateElementData.firstName || " "}
-            </Text>
-          </View>
-          <View style={pdfStyles.gridBoxHeaderTeam}>
-            <Text>{gridDateElementData.team || " "}</Text>
-          </View>
-        </View>
-        <View style={pdfStyles.gridBoxBody}>
-          <Text style={pdfStyles.gridBoxBodySummary}>
-            {gridDateElementData.summary || " "}
-          </Text>
-          <View style={pdfStyles.gridBoxBodyContingencies}>
-            {gridDateElementData.contingencies &&
-              gridDateElementData.contingencies.map((item, index) => {
-                if (item != null)
-                  return (
-                    <Text
-                      style={pdfStyles.gridBoxBodyContingencyItem}
-                      key={`${index}-${item}`}
-                    >
-                      {item || " "}
-                    </Text>
-                  );
-                else return null;
-              })}
-          </View>
-          {gridDateElementData.contentType === "simple" && (
-            <Text>{gridDateElementData.simpleContent || " "}</Text>
-          )}
-
-          {gridDateElementData.contentType === "nested" && (
-            <View>
-              {gridDateElementData.nestedContent?.map((sectionData) => {
-                return (
-                  <View
-                    key={sectionData.id}
-                    style={pdfStyles.gridBoxNestedContentSectionRoot}
-                  >
-                    <Text style={pdfStyles.gridBoxNestedContentTopText}>
-                      <Text style={pdfStyles.gridBoxNestedContentTitle}>
-                        {sectionData.title ? `${sectionData.title}: ` : " "}
-                      </Text>
-                      {sectionData.top || " "}
-                    </Text>
-                    {sectionData?.items?.map((item) => {
-                      return (
-                        <View
-                          key={item.id}
-                          style={pdfStyles.gridBoxNestedContentItemRoot}
-                        >
-                          <Svg width="4pt" height="5.5pt">
-                            <Rect
-                              x="0"
-                              y="2pt"
-                              width="3pt"
-                              height="3pt"
-                              stroke="black"
-                              fill="black"
-                            />
-                          </Svg>
-                          <Text style={pdfStyles.gridBoxNestedContentItemText}>
-                            {item.value || " "}
-                          </Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                );
-              })}
-            </View>
-          )}
-        </View>
-        <View style={pdfStyles.gridBoxBottomText}>
-          <Text>{gridDateElementData.bottomText || " "}</Text>
-        </View>
+        ))}
       </View>
     );
   } else {

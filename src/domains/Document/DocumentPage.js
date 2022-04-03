@@ -7,7 +7,7 @@ import useGridState from "../../global/useGridState";
 
 const DocumentPage = () => {
   const { settings } = useSettings();
-  const { gridData } = useGridState();
+  const { gridTemplate, gridData } = useGridState();
 
   if (gridData) {
     return (
@@ -16,6 +16,7 @@ const DocumentPage = () => {
           <MyDocument
             title={settings.document_title}
             colsPerPage={settings.document_cols_per_page}
+            template={gridTemplate}
             data={gridData}
           />
         </PDFViewer>

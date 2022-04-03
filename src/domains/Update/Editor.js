@@ -18,6 +18,9 @@ import SnippetPopover from "./SnippetPopover";
 // Context
 import { useSettings } from "../../global/Settings";
 
+// Redux
+import { useSelector } from "react-redux";
+
 // Util
 import { getCursorPos, setCursorPos } from "../../utils/CursorPos";
 
@@ -33,6 +36,11 @@ const StyledEditorRoot = styled(Box, {
 
 const Editor = ({ control }) => {
   const { settings } = useSettings();
+
+  const currentGridDataObject = useSelector(
+    (state) => state.gridEditor.selectedGDO
+  );
+  const template = useSelector((state) => state.gridState.template);
 
   /* Ref to last name input field, so we can focus() here when a gridDataElement is selected */
   const lastNameInputRef = useRef();
@@ -136,100 +144,29 @@ const Editor = ({ control }) => {
     <StyledEditorRoot>
       <form id="editor" autoComplete="off" spellCheck="false">
         <Stack direction="column" spacing={2}>
-          <Stack direction="row" spacing={1}>
-            <Controller
-              control={control}
-              name="location"
-              render={({ field, fieldState: { isDirty } }) => (
-                <EditorTextField
-                  label="Location"
-                  inputSize={6}
-                  inputProps={{
-                    sx: { textAlign: "center" },
-                  }}
-                  isDirty={isDirty}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="lastName"
-              render={({ field, fieldState: { isDirty } }) => (
-                <EditorTextField
-                  label="Last Name"
-                  isDirty={isDirty}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="firstName"
-              render={({ field, fieldState: { isDirty } }) => (
-                <EditorTextField
-                  label="First Name"
-                  isDirty={isDirty}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="team"
-              render={({ field, fieldState: { isDirty } }) => (
-                <EditorTextField
-                  label="Team"
-                  inputSize={15}
-                  isDirty={isDirty}
-                  {...field}
-                />
-              )}
-            />
-          </Stack>
-          <Controller
-            control={control}
-            name="summary"
-            render={({ field, formState: { isDirty } }) => (
-              <EditorTextField
-                label="Summary"
-                placeholder="Enter some identifying data (usually 1-2 sentences)"
-                fullWidth
-                multiline
-                minRows={2}
-                maxRows={6}
-                isDirty={isDirty}
-                {...field}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="contingencies"
-            render={({ field, formState: { isDirty } }) => (
-              <ContingencyInput
-                label="Contingencies"
-                options={settings.contingencyOptions}
-                isDirty={isDirty}
-                field={field}
-              />
-            )}
-            onChange={([, data]) => data}
-          />
-          <ContentInput />
-          <Controller
-            control={control}
-            name="bottomText"
-            render={({ field, fieldState: { isDirty } }) => (
-              <EditorTextField
-                placeholder="One to several words on the bottom"
-                label="Bottom Text"
-                inputSize={30}
-                isDirty={isDirty}
-                {...field}
-              />
-            )}
-          />
+          {template.rows.allIds?.map((rowId) => (
+            <Stack direction="row" spacing={1} key={rowId}>
+              {template.rows.byId[rowId]?.elements.map((rel) => {
+                const templateElement = template.elements.byId[rel];
+                return (
+                  <Controller
+                    key={rel}
+                    control={control}
+                    name={templateElement.id}
+                    render={({ field }) => (
+                      <EditorTextField
+                        label={templateElement.name}
+                        width={templateElement.widthPercent}
+                        multiline={template.rows.byId[rowId].fillHeight}
+                        minRows={2}
+                        {...field}
+                      />
+                    )}
+                  />
+                );
+              })}
+            </Stack>
+          ))}
         </Stack>
       </form>
       <SnippetPopover popupState={popupState} onSelect={onSnippetSelected} />

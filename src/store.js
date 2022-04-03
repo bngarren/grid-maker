@@ -12,7 +12,9 @@ import {
 } from "redux-persist";
 import templateEditorReducer from "./domains/Template/templateEditorSlice";
 import gridStateReducer from "./global/gridStateSlice";
-import gridEditorReducer from "./domains/Update/gridEditorSlice";
+import gridEditorReducer, {
+  gridEditorMiddleware,
+} from "./domains/Update/gridEditorSlice";
 
 const reducers = combineReducers({
   templateEditor: templateEditorReducer,
@@ -27,6 +29,7 @@ See: https://edvins.io/how-to-use-redux-persist-with-redux-toolkit
 const persistConfig = {
   key: "root",
   storage,
+  blacklist: ["gridEditor"],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);
@@ -40,5 +43,5 @@ export default configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }),
+    }).prepend(gridEditorMiddleware),
 });

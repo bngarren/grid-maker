@@ -76,6 +76,27 @@ const _deleteGridDataObject = (state, { payload }) => {
   }
 };
 
+const _updateGridDataObject = (state, { payload }) => {
+  // Find the GDO currently in state
+  const stateGDO = state.gridData.find((f) => f.id === payload.gdoId);
+
+  if (stateGDO) {
+    // Loop through each element and update the element if it
+    // was included in the payload
+    stateGDO.elements.forEach((el) => {
+      if (payload.elementValues[el.id]) {
+        el.value = payload.elementValues[el.id];
+
+        // Update the GDO's indexElementValue, if necessary, i.e.
+        // the index element's value was changed
+        if (state.template.indexElement === el.id) {
+          stateGDO.indexElementValue = payload.elementValues[el.id];
+        }
+      }
+    });
+  }
+};
+
 export const gridStateSlice = createSlice({
   name: "gridState",
   initialState: {
@@ -86,6 +107,7 @@ export const gridStateSlice = createSlice({
     addGridDataObject: _addGridDataObject,
     clearGridDataObject: _clearGridDataObject,
     deleteGridDataObject: _deleteGridDataObject,
+    updateGridDataObject: _updateGridDataObject,
   },
 });
 
@@ -94,6 +116,7 @@ export const {
   addGridDataObject,
   clearGridDataObject,
   deleteGridDataObject,
+  updateGridDataObject,
 } = gridStateSlice.actions;
 
 export default gridStateSlice.reducer;

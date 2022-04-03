@@ -41,7 +41,7 @@ const ROWS_PER_PAGE = 15;
 
 /* Styling */
 const StyledTableCellHeader = styled(TableCell, {
-  name: "TableGridDataElements",
+  name: "TableGridDataObjects",
   slot: "header",
 })(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -52,7 +52,7 @@ const StyledTableCellHeader = styled(TableCell, {
 }));
 
 const StyledTableCell = styled(TableCell, {
-  name: "TableGridDataElements",
+  name: "TableGridDataObjects",
   slot: "tableCell",
   shouldForwardProp: (prop) => prop !== "isSelected",
 })(({ isSelected, component, theme }) => ({
@@ -66,12 +66,21 @@ const StyledTableCell = styled(TableCell, {
   ...(isSelected &&
     component === "th" && {
       transition: "color 0.1s linear",
-      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.secondary.dark,
     }),
 }));
 
+const StyledRadioButton = styled(Radio, {
+  name: "TableGridDataObjects",
+  slot: "radio",
+})(({ theme }) => ({
+  "& .MuiSvgIcon-root[data-testid='RadioButtonCheckedIcon']": {
+    fill: theme.palette.secondary.dark,
+  },
+}));
+
 const StyledTablePagination = styled(TablePagination, {
-  name: "TableGridDataElements",
+  name: "TableGridDataObjects",
   slot: "pagination",
 })(({ theme }) => ({
   "& .MuiTablePagination-root": {
@@ -96,7 +105,7 @@ const StyledTablePagination = styled(TablePagination, {
 }));
 
 const StyledActionsDiv = styled("div", {
-  name: "TableGridDataElements",
+  name: "TableGridDataObjects",
   slot: "actions",
 })(() => ({
   display: "flex",
@@ -128,10 +137,11 @@ const StyledMenuOpenIcon = styled(MenuOpenIcon)(({ theme }) => ({
   color: theme.palette.primary.light,
 }));
 
-const TableGridDataObjects = ({ selectedGDO }) => {
+const TableGridDataObjects = () => {
   const { gridData } = useGridState();
+  const selectedGDO = useSelector((state) => state.gridEditor.selectedGDO);
   const selectedKey = useSelector((state) =>
-    state.gridState.gridData.find((gdo) => gdo.id === selectedGDO)
+    state.gridState.gridData.findIndex((gdo) => gdo.id === selectedGDO?.id)
   );
   const indexElement = useSelector(
     (state) =>
@@ -295,10 +305,12 @@ const GridDataObjectActions = memo(function GridDataObjectActions({
     <StyledActionsDiv>
       {
         <>
-          <Radio
+          <StyledRadioButton
             checked={isSelected}
             onClick={gdoActionsEdit(gridDataObjectId)}
-            sx={{ ...buttonPaddingSx }}
+            sx={{
+              ...buttonPaddingSx,
+            }}
           />
         </>
       }

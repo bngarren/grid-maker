@@ -6,6 +6,7 @@ import {
   addGridDataObject,
   clearGridDataObject,
   deleteGridDataObject,
+  updateGridDataObject,
 } from "./gridStateSlice";
 
 // Utility
@@ -21,6 +22,7 @@ const generateDefaultGridDataObject = () => {
 
 const useGridState = () => {
   const dispatch = useDispatch();
+  const gridTemplate = useSelector((state) => state.gridState.template);
   const gridData = useSelector((state) => state.gridState.gridData);
 
   const addNewGridDataObject = React.useCallback(() => {
@@ -45,6 +47,15 @@ const useGridState = () => {
     [dispatch]
   );
 
+  const _updateGridDataObject = React.useCallback(
+    (gdoId, gdoElementValues) => {
+      dispatch(
+        updateGridDataObject({ gdoId: gdoId, elementValues: gdoElementValues })
+      );
+    },
+    [dispatch]
+  );
+
   const getGridDataObjectById = React.useCallback(
     (gdoId) => {
       return gridData.find((g) => g.id === gdoId);
@@ -53,10 +64,12 @@ const useGridState = () => {
   );
 
   return {
+    gridTemplate,
     gridData,
     addNewGridDataObject,
     clearGridDataObject: _clearGridDataObject,
     deleteGridDataObject: _deleteGridDataObject,
+    updateGridDataObject: _updateGridDataObject,
     getGridDataObjectById,
   };
 };

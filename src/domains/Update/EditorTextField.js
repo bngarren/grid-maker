@@ -44,7 +44,7 @@ const EditorTextField = forwardRef(
     ref
   ) => {
     return (
-      <FormControl sx={{ width: props.fullWidth && "100%" }}>
+      <FormControl sx={{ width: `${props.width}%` || "auto" }}>
         <StyledInputLabel
           htmlFor={`editorTextField-${label}`}
           {...InputLabelProps}
@@ -56,6 +56,14 @@ const EditorTextField = forwardRef(
           inputProps={{
             ...inputProps,
             size: inputSize,
+            ...(props.multiline && {
+              style: {
+                resize: "vertical",
+                height: "auto",
+                minHeight: "4rem",
+                maxHeight: "24rem",
+              },
+            }),
           }}
           {...InputProps}
           {...props}

@@ -96,19 +96,23 @@ const StyledNavigateIconButton = styled(IconButton)(({ theme }) => ({
 
 const EditorController = ({
   dirtyFormCallback = (f) => f,
-  onChangeGridDataElement = (f) => f,
+  onNavigateGridDataObject = (f) => f,
   onSave = (f) => f,
 }) => {
   const { settings, dispatchSettings } = useSettings();
 
-  const selectedGDO = useSelector((state) => state.gridEditor.selectedGDO); // id
-  const { getGridDataObjectById } = useGridState();
-  const currentGridDataObject = getGridDataObjectById(selectedGDO);
+  const currentGridDataObject = useSelector(
+    (state) => state.gridEditor.selectedGDO
+  );
+
+  const defaultFormValues = useSelector(
+    (state) => state.gridEditor.defaultFormValues
+  );
 
   const currentGridDataObjectIdRef = useRef(currentGridDataObject?.id);
 
   const form = useForm({
-    defaultValues: { ...currentGridDataObject },
+    defaultValues: { ...defaultFormValues },
   });
 
   const {
@@ -119,24 +123,30 @@ const EditorController = ({
   } = form;
 
   /* Reset the form to initial values when new/different
-  gridDataElement data comes through */
+  gridDataObject data comes through */
   useEffect(() => {
     /* Dont reset anything if currently submitting form */
     if (!isSubmitting) {
-      /* A new gridDataElement has been selected and passed in */
+      /* A new gridDataObject has been selected */
       if (currentGridDataObjectIdRef.current !== currentGridDataObject.id) {
-        reset({ ...currentGridDataObject });
+        reset({ ...defaultFormValues });
         currentGridDataObjectIdRef.current = currentGridDataObject.id;
       }
     }
-  }, [reset, currentGridDataObject, isSubmitting]);
+  }, [reset, currentGridDataObject, defaultFormValues, isSubmitting]);
 
   /* Reset the formstate after a submit is successful */
   useEffect(() => {
     if (isSubmitSuccessful) {
-      reset({ ...currentGridDataObject }, { keepSubmitCount: true });
+      reset({ ...defaultFormValues }, { keepSubmitCount: true });
     }
-  }, [reset, currentGridDataObject, isSubmitted, isSubmitSuccessful]);
+  }, [
+    reset,
+    currentGridDataObject,
+    defaultFormValues,
+    isSubmitted,
+    isSubmitSuccessful,
+  ]);
 
   /* Notify UpdatePage of isDirty status */
   useEffect(() => {
@@ -160,7 +170,7 @@ const EditorController = ({
     async (data) => {
       console.log("submitted data", data); //! DEBUG
 
-      /* Send to UpdatePage for saving via "onSave" callback. "data" is the Editor's gridDataElement's data */
+      /* Send to UpdatePage for saving via "onSave" callback. "data" is the Editor's gridDataObject's data */
       let res = await onSave(data);
       if (!res) {
         throw new Error(
@@ -238,7 +248,7 @@ const EditorController = ({
     "navigateNextGridDataElement",
     (e) => {
       e.preventDefault();
-      onChangeGridDataElement(false);
+      onNavigateGridDataObject(false);
     },
     { enableOnTags: [] }
   );
@@ -247,7 +257,7 @@ const EditorController = ({
     "navigatePreviousGridDataElement",
     (e) => {
       e.preventDefault();
-      onChangeGridDataElement(true);
+      onNavigateGridDataObject(true);
     },
     { enableOnTags: [] }
   );
@@ -274,7 +284,7 @@ const EditorController = ({
           <StyledNavigateIconButton
             disabled={isDirty}
             disableRipple
-            onClick={() => onChangeGridDataElement(true)}
+            onClick={() => onNavigateGridDataObject(true)}
           >
             <NavigateBeforeIcon
               sx={{ fontSize: "1.6rem", textShadow: "shadows.1" }}
@@ -289,7 +299,7 @@ const EditorController = ({
           <StyledNavigateIconButton
             disabled={isDirty}
             disableRipple
-            onClick={() => onChangeGridDataElement(false)}
+            onClick={() => onNavigateGridDataObject(false)}
           >
             <NavigateNextIcon sx={{ fontSize: "1.6rem" }} />
           </StyledNavigateIconButton>
