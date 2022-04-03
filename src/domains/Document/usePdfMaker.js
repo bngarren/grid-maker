@@ -5,21 +5,19 @@ import { saveAs } from "file-saver";
 import MyDocument from "./MyDocument";
 
 //context
-import { useGridState } from "../../global/GridState";
+import useGridState from "../../global/useGridState";
 import { useSettings } from "../../global/Settings";
 
 const usePdfMaker = () => {
   const { settings } = useSettings();
-  const { locationLayout, gridData, census } = useGridState();
+  const { gridData } = useGridState();
 
   const getMyDocument = () => {
     return (
       <MyDocument
-        locationLayout={locationLayout}
         title={settings.document_title}
         colsPerPage={settings.document_cols_per_page}
         data={gridData}
-        census={census}
       />
     );
   };

@@ -2,7 +2,7 @@ import { cloneElement } from "react";
 import { saveAs } from "file-saver";
 
 // Context
-import { useGridState } from "../../global/GridState";
+import useGridState from "../../global/useGridState";
 import { useAuthStateContext } from "../../global/AuthState";
 
 // Utility

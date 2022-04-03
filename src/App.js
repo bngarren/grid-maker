@@ -25,9 +25,6 @@ import { Firebase } from "./api/Firebase";
 import { config } from "./api/credentials";
 import AuthStateProvider from "./global/AuthState";
 
-// GridState
-import GridStateProvider from "./global/GridState";
-
 const fb = new Firebase({ ...config });
 
 let persistor = persistStore(store);
@@ -41,19 +38,17 @@ function App() {
             <ThemeProvider theme={theme}>
               <CssBaseline />
               <AuthStateProvider Firebase={fb}>
-                <GridStateProvider Firebase={fb}>
-                  <DialogProvider>
-                    <BrowserRouter>
-                      <Container maxWidth="xl">
-                        <Header />
-                        <main>
-                          <PageRouter />
-                        </main>
-                      </Container>
-                      <Footer />
-                    </BrowserRouter>
-                  </DialogProvider>
-                </GridStateProvider>
+                <DialogProvider>
+                  <BrowserRouter>
+                    <Container maxWidth="xl">
+                      <Header />
+                      <main>
+                        <PageRouter />
+                      </main>
+                    </Container>
+                    <Footer />
+                  </BrowserRouter>
+                </DialogProvider>
               </AuthStateProvider>
             </ThemeProvider>
           </SettingsProvider>

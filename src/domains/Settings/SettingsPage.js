@@ -14,7 +14,7 @@ import { useDialog } from "../../components";
 
 // Context
 import { useSettings } from "../../global/Settings";
-import { useGridState } from "../../global/GridState";
+import useGridState from "../../global/useGridState";
 
 // Utility
 import {
@@ -33,7 +33,7 @@ const SettingsPage = () => {
   const { dispatchSettings } = useSettings();
 
   /* Get GridData and locationLayout from context */
-  const { locationLayout, gridData, updateGridData } = useGridState();
+  const { gridData } = useGridState();
 
   const { confirm } = useDialog();
 
@@ -84,6 +84,7 @@ const SettingsPage = () => {
     const formattedLocationLayout =
       getLocationLayoutArrayFromCsv(newLocationLayout);
 
+    let locationLayout = []; // !TODO
     /* Find the locations that differ between the current and new locationLayouts */
     let difference = locationLayout.filter(
       (x) => !formattedLocationLayout.includes(x)
@@ -120,7 +121,7 @@ const SettingsPage = () => {
     }
 
     if (proceed) {
-      updateGridData(gridData, formattedLocationLayout);
+      // updateGridData(gridData, formattedLocationLayout); // ! TODO
       return true;
     }
   };

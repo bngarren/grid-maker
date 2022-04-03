@@ -12,7 +12,7 @@ import { styled } from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
 
 // Context
-import { useGridState } from "../../global/GridState";
+import useGridState from "../../global/useGridState";
 
 // Util
 import { APP_TEXT } from "../../utils";
@@ -25,8 +25,10 @@ const StyledOutlinedInput = styled(OutlinedInput, {
 })(() => ({}));
 
 const AddNewGridDataElementForm = ({ onSubmit = (f) => f }) => {
-  const { locationLayout, gridData, updateGridData } = useGridState();
+  const { gridData } = useGridState();
   const [value, setValue] = useState("");
+
+  let locationLayout = []; // !TODO
 
   const newLocationAlreadyExists = (location) =>
     locationLayout?.includes(location);
@@ -61,14 +63,15 @@ const AddNewGridDataElementForm = ({ onSubmit = (f) => f }) => {
       onSubmit(keyOfExistingLocation);
     } else {
       const newLocationLayout = [...locationLayout, valToSubmit];
-      updateGridData(gridData, newLocationLayout).then((res) => {
+      // !TODO
+      /* updateGridData(gridData, newLocationLayout).then((res) => {
         if (res) {
           const keyOfNewLocation = res.findIndex(
             (element) => element.location === valToSubmit
           );
           onSubmit(keyOfNewLocation);
         }
-      });
+      }); */
     }
     setValue("");
   };

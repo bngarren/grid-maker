@@ -22,7 +22,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled } from "@mui/system";
 
 // Context
-import { useGridState } from "../../global/GridState";
+import useGridState from "../../global/useGridState";
 
 // Utility
 import { isGridDataElementEmpty } from "../../utils";

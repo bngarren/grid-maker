@@ -10,11 +10,11 @@ import { useImporter } from "../../domains/IO/useImporter";
 import ImportList from "./ImportList";
 
 // GridData context
-import { useGridState } from "../../global/GridState";
+import useGridState from "../../global/useGridState";
 
 const ImportSection = () => {
   /* Use this hook to updateGridData once new data is imported */
-  const { updateGridData } = useGridState();
+  // const { updateGridData } = useGridState();
 
   /* The useImporter custom hook will manage our importer data
   and state, including status.

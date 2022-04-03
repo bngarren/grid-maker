@@ -3,7 +3,6 @@ import { render } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./global/Theme";
 import { SettingsProvider } from "./global/Settings";
-import GridStateProvider from "./global/GridState";
 import { BrowserRouter } from "react-router-dom";
 import { Firebase } from "./api/Firebase";
 import { config } from "./api/credentials";
@@ -14,9 +13,7 @@ const AllTheProviders = ({ children }) => {
   return (
     <SettingsProvider>
       <ThemeProvider theme={theme}>
-        <GridStateProvider>
-          <BrowserRouter>{children}</BrowserRouter>
-        </GridStateProvider>
+        <BrowserRouter>{children}</BrowserRouter>
       </ThemeProvider>
     </SettingsProvider>
   );
