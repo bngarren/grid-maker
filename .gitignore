@@ -14,12 +14,6 @@
 # scripts
 *.sh
 
-# prettier config
-.prettierrc
-
-## vscode workspace
-/.vscode
-
 # misc
 .DS_Store
 .env.local

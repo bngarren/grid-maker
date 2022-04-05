@@ -3,7 +3,6 @@ import { createTheme } from "@mui/material/styles";
 /* Palette created here: https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=455A64&secondary.color=B2FF59 */
 
 const theme = createTheme({
-  mode: "light",
   palette: {
     primary: {
       main: "#455a64",
@@ -17,11 +16,6 @@ const theme = createTheme({
       dark: "#7ecb20",
       contrastText: "#000000",
     },
-  },
-  typography: {
-    formFontSizeLevel1: "0.98rem",
-    formFontSizeLevel2: "0.90rem",
-    formFontSizeLevel3: "0.85rem",
   },
 });
 

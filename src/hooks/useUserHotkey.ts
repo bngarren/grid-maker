@@ -8,7 +8,7 @@ import { useSettings } from "../global/Settings";
  * E.g., { save: "ctrl+s" }
  * @returns hotkey (string)
  */
-const useUserHotkey = (action) => {
+const useUserHotkey = (action: string): string | undefined => {
   const { settings } = useSettings();
   let hotkey;
   try {

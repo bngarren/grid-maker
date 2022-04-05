@@ -1,6 +1,6 @@
 const testGridState = {
   template: {
-    templateID: "cdab0b7b-90bf-431d-b071-355394cb42f2",
+    id: "cdab0b7b-90bf-431d-b071-355394cb42f2",
     rows: {
       byId: {
         "3ef68b18-c529-4a4c-9822-890f5b4646fd": {

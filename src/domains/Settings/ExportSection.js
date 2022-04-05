@@ -32,7 +32,7 @@ const ExportSection = ({ onSave = (f) => f }) => {
   /* Error when there are no items selected to export */
   const error = gridDataToExport.length < 1;
 
-  const handleOnExport = () => {};
+  const handleOnExport = (f) => f;
 
   return (
     <Box>

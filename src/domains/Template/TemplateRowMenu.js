@@ -18,7 +18,7 @@ const TemplateRowMenu = React.forwardRef(
   ({ popupState, rowId, onAddElement, ...props }, ref) => {
     const dispatch = useDispatch();
     const row = useSelector((state) => state.templateEditor.rows.byId[rowId]);
-    const reset = React.useCallback(() => {}, []);
+    const reset = React.useCallback((f) => f, []);
 
     React.useEffect(() => {
       reset();
@@ -114,4 +114,5 @@ const TemplateRowMenu = React.forwardRef(
   }
 );
 
+TemplateRowMenu.displayName = "TemplateRowMenu";
 export default TemplateRowMenu;

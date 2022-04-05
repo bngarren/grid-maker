@@ -102,4 +102,5 @@ const Element = React.forwardRef(
   }
 );
 
+Element.displayName = "Element";
 export default Element;

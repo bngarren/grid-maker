@@ -34,7 +34,7 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, reducers);
 
-export default configureStore({
+const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== "production",
   /* https://redux-toolkit.js.org/usage/usage-guide#use-with-redux-persist */
@@ -45,3 +45,9 @@ export default configureStore({
       },
     }).prepend(gridEditorMiddleware),
 });
+
+export default store;
+
+// refer to: https://www.typescriptlang.org/docs/handbook/2/typeof-types.html#the-typeof-type-operator
+// ReturnType<T> takes a function type and returns its return type
+export type RootState = ReturnType<typeof store.getState>;

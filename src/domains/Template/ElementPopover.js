@@ -166,4 +166,5 @@ const ElementPopover = React.forwardRef(
   }
 );
 
+ElementPopover.displayName = "ElementPopover";
 export default ElementPopover;

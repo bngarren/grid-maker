@@ -51,7 +51,7 @@ const ImportSection = () => {
   update gridState */
   const handleConfirm = () => {
     confirm(); //useImporter
-    updateGridData(gridDataToSave);
+    // updateGridData(gridDataToSave); //! TODO
   };
 
   /* See useImporter for details of STATUS enum. We use this status state to

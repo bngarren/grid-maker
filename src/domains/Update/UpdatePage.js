@@ -30,13 +30,7 @@ const UpdatePage = () => {
   const dispatch = useDispatch();
 
   const selectedGDO = useSelector((state) => state.gridEditor.selectedGDO);
-
-  /* true, if an unsaved changed has occurred in EditorController's react-hook-form */
-  const dirtyEditorController = React.useRef(false);
-
-  const handleDirtyEditor = React.useCallback((isDirty, dirtyFields) => {
-    dirtyEditorController.current = isDirty;
-  }, []);
+  const dirtyEditor = useSelector((state) => state.gridEditor.isDirty);
 
   const { confirm } = useDialog();
 
@@ -49,7 +43,7 @@ const UpdatePage = () => {
       let proceed = true;
       const selectedIndex = gridData.findIndex((g) => g.id === selectedGDO.id);
       const gdo = gridData[selectedIndex];
-      if (dirtyEditorController.current) {
+      if (dirtyEditor) {
         proceed = false;
         // Show a confirm dialog if there is data that isn't saved
         const dialogTemplate = {
@@ -68,7 +62,7 @@ const UpdatePage = () => {
         );
       }
     },
-    [gridData, selectedGDO, dispatch, confirm]
+    [gridData, selectedGDO, dispatch, confirm, dirtyEditor]
   );
 
   /**
@@ -79,7 +73,7 @@ const UpdatePage = () => {
     (gdoId) => async () => {
       let proceed = true;
       const gdo = gridData.find((g) => g.id === gdoId);
-      if (dirtyEditorController.current) {
+      if (dirtyEditor) {
         // Show a confirm dialog if there is data that isn't saved
         const dialogTemplate = {
           title: "There is unsaved data for this location",
@@ -98,7 +92,7 @@ const UpdatePage = () => {
         }
       }
     },
-    [dirtyEditorController, gridData, selectedGDO, dispatch, confirm]
+    [gridData, selectedGDO, dispatch, confirm, dirtyEditor]
   );
 
   /**
@@ -188,7 +182,6 @@ const UpdatePage = () => {
           {selectedGDO != null && (
             <>
               <EditorController
-                dirtyFormCallback={handleDirtyEditor}
                 onNavigateGridDataObject={navigateAdjacentGridDataObject}
                 onSave={onEditorControllerSave}
               />

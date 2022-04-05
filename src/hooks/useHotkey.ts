@@ -1,4 +1,5 @@
-import { useHotkeys } from "react-hotkeys-hook";
+import { KeyHandler } from "hotkeys-js";
+import { useHotkeys, Options } from "react-hotkeys-hook";
 import useUserHotkeys from "./useUserHotkey";
 /**
  * This is our app's custom hook for registering a hotkey which
@@ -12,20 +13,27 @@ import useUserHotkeys from "./useUserHotkey";
  * By default, we enable hotkey activation within inputs and only keyDown events.
  * @param {Object[]} deps Dependency array that needs to keep the memoized handler non-stale
  */
-const useHotkey = (hotkeyAction, handler, options = {}, deps = []) => {
+const useHotkey = (
+  hotkeyAction: string,
+  handler: KeyHandler,
+  options?: Options | undefined,
+  deps?: any[] | undefined //eslint-disable-line
+): void => {
+  if (hotkeyAction == null) {
+    console.error("Could not register hotkey", hotkeyAction);
+  }
+
   /* Register this hotkey, based on user-defined key combo */
-  const ref = useHotkeys(
-    useUserHotkeys(hotkeyAction),
+  useHotkeys(
+    useUserHotkeys(hotkeyAction) ?? "",
     handler,
     {
       enableOnTags: ["INPUT", "TEXTAREA", "SELECT"], // allow hotkey within inputs
-      keyDown: true,
+      keydown: true,
       ...options,
     },
     deps
   );
-
-  return ref;
 };
 
 export default useHotkey;

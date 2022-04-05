@@ -1,40 +1,47 @@
 {
-  "env": {
-    "browser": true,
-    "es2021": true
-  },
-  "extends": [
-    "react-app",
-    "react-app/jest",
-    "eslint:recommended",
-    //"plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:import/errors"
-  ],
-  "parser": "@babel/eslint-parser",
-  "parserOptions": {
-    "requireConfigFile": false,
-    "babelOptions": {
-      "presets": ["@babel/preset-react"]
-    },
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "sourceType": "module"
-  },
-  "plugins": ["react", "prettier", "import", "react-hooks"],
-  "rules": {
-    // Include .prettierrc.js rules
-    "prettier/prettier": ["error", {}, { "usePrettierrc": true }],
-    // suppress errors for missing 'import React' in files
-    "react/react-in-jsx-scope": "off",
-    /* eslint-disable react/prop-types */
-    "react/prop-types": "off",
-    "no-unused-vars": "warn"
-  },
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
-  }
+	"env": {
+		"browser": true,
+		"es2021": true
+	},
+	"plugins": [
+		"react",
+		"react-hooks",
+		"@typescript-eslint"
+	],
+	"extends": [
+		"eslint:recommended", // the set of rules which are recommended for all projects by the ESLint Team
+		"plugin:react/recommended",
+		"plugin:react-hooks/recommended",
+		"plugin:@typescript-eslint/recommended", // recommended TS specific rules
+		"plugin:prettier/recommended" // turns off eslint rules that might confict with prettier and below in
+		// rules, turns Prettier rules into eslint rules (thus lets Prettier predominantly handle formatting)
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"babelOptions": {
+			"presets": ["@babel/preset-react"]
+		},
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"sourceType": "module"
+	},
+	"rules": {
+		// Include .prettierrc.js rules
+		"prettier/prettier": "error",
+		// suppress errors for missing 'import React' in files
+		"react/react-in-jsx-scope": "off",
+		/* eslint-disable react/prop-types */
+		"react/prop-types": "off",
+		"@typescript-eslint/no-unused-vars": "warn",
+    	"no-unused-vars": "off",
+		"no-use-before-define": "off",
+		"@typescript-eslint/no-use-before-define": ["warn"],
+		"@typescript-eslint/explicit-function-return-type": "off"
+	},
+	"settings": {
+		"react": {
+			"version": "detect"
+		}
+	}
 }

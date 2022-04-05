@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import * as React from "react";
 
 // MUI
 import {
@@ -11,8 +11,9 @@ import {
   IconButton,
   Tooltip,
   Fade,
+  GridProps,
 } from "@mui/material";
-import { styled } from "@mui/system";
+import { styled } from "@mui/material/styles";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import CircleIcon from "@mui/icons-material/Circle";
@@ -29,30 +30,55 @@ import Editor from "./Editor";
 import { ButtonStandard } from "../../components";
 
 // Context
-import { useSelector } from "react-redux";
-import useGridState from "../../global/useGridState";
+import { useSelector, useDispatch } from "react-redux";
+import { setDirty } from "./gridEditorSlice";
 import { useSettings } from "../../global/Settings";
 
 // Util
 import { APP_TEXT } from "../../utils";
 
+// Types
+import { RootState } from "../../store";
+import {
+  TemplateElementId,
+  GridDataObjectId,
+} from "../../global/gridState.types";
+interface EditorFormData {
+  [key: TemplateElementId]: string;
+}
+interface EditorControllerProps {
+  onNavigateGridDataObject: (reverse: boolean) => void;
+  onSave: (data: EditorFormData) => boolean;
+}
+
 /* Styling */
+
+// Types for props passed for styling
+interface StyledFlags {
+  isDirty?: boolean;
+  addTopMargin?: boolean;
+}
 
 const StyledGridContainer = styled(Grid, {
   name: "EditorController",
   slot: "container",
   shouldForwardProp: (prop) => prop !== "isDirty" && prop !== "addTopMargin",
-})(({ theme, isDirty, addTopMargin }) => ({
-  boxShadow: isDirty ? theme.shadows[5] : theme.shadows[1],
+})<StyledFlags>(({ isDirty, addTopMargin, theme }) => ({
   borderRadius: "4px",
-  marginTop: addTopMargin && theme.spacing(1),
+  boxShadow: theme.shadows[1],
+  ...(isDirty && {
+    boxShadow: theme.shadows[5],
+  }),
+  ...(addTopMargin && {
+    marginTop: theme.spacing(1),
+  }),
 }));
 
 const StyledToolbarTop = styled(Toolbar, {
   name: "EditorController",
   slot: "toolbar-top",
   shouldForwardProp: (prop) => prop !== "isDirty",
-})(({ theme, isDirty }) => ({
+})<StyledFlags>(({ theme, isDirty }) => ({
   minHeight: "36px",
   display: "flex",
   flexDirection: "row",
@@ -69,12 +95,12 @@ const StyledToolbarBottom = styled(Toolbar, {
   name: "EditorController",
   slot: "toolbar-bottom",
   shouldForwardProp: (prop) => prop !== "isDirty",
-})(({ theme, isDirty }) => ({
+})<StyledFlags>(({ theme, isDirty }) => ({
   minHeight: "32px",
   display: "flex",
   flexDirection: "row",
   justifyContent: "center",
-  fontSize: theme.typography.formFontSizeLevel3,
+  fontSize: "0.85rem",
   color: theme.palette.secondary.light,
   backgroundColor: isDirty
     ? theme.palette.primary.light
@@ -95,21 +121,23 @@ const StyledNavigateIconButton = styled(IconButton)(({ theme }) => ({
 }));
 
 const EditorController = ({
-  dirtyFormCallback = (f) => f,
-  onNavigateGridDataObject = (f) => f,
-  onSave = (f) => f,
-}) => {
-  const { settings, dispatchSettings } = useSettings();
+  onNavigateGridDataObject,
+  onSave,
+}: EditorControllerProps) => {
+  const { settings, dispatchSettings } = useSettings(); // TODO: move to redux store
+  const dispatch = useDispatch();
 
   const currentGridDataObject = useSelector(
-    (state) => state.gridEditor.selectedGDO
+    (state: RootState) => state.gridEditor.selectedGDO
   );
 
   const defaultFormValues = useSelector(
-    (state) => state.gridEditor.defaultFormValues
+    (state: RootState) => state.gridEditor.defaultFormValues
   );
 
-  const currentGridDataObjectIdRef = useRef(currentGridDataObject?.id);
+  const currentGridDataObjectIdRef = React.useRef<GridDataObjectId | null>(
+    currentGridDataObject?.id ?? null
+  );
 
   const form = useForm({
     defaultValues: { ...defaultFormValues },
@@ -122,12 +150,12 @@ const EditorController = ({
     handleSubmit,
   } = form;
 
-  /* Reset the form to initial values when new/different
+  /* Reset the form to initial values when a different
   gridDataObject data comes through */
-  useEffect(() => {
+  React.useEffect(() => {
     /* Dont reset anything if currently submitting form */
-    if (!isSubmitting) {
-      /* A new gridDataObject has been selected */
+    if (!isSubmitting && currentGridDataObject?.id) {
+      /* A different gridDataObject has been selected */
       if (currentGridDataObjectIdRef.current !== currentGridDataObject.id) {
         reset({ ...defaultFormValues });
         currentGridDataObjectIdRef.current = currentGridDataObject.id;
@@ -136,7 +164,7 @@ const EditorController = ({
   }, [reset, currentGridDataObject, defaultFormValues, isSubmitting]);
 
   /* Reset the formstate after a submit is successful */
-  useEffect(() => {
+  React.useEffect(() => {
     if (isSubmitSuccessful) {
       reset({ ...defaultFormValues }, { keepSubmitCount: true });
     }
@@ -148,30 +176,20 @@ const EditorController = ({
     isSubmitSuccessful,
   ]);
 
-  /* Notify UpdatePage of isDirty status */
-  useEffect(() => {
-    dirtyFormCallback(isDirty);
-  }, [isDirty, dirtyFormCallback]);
-
-  /* The save process can be initiated by save button click or hotkey */
-  const onSaveInitiation = (e) => {
-    handleSubmit(
-      onSubmitValid,
-      onSubmitError
-    )(e).catch((error) => {
-      console.warn("Save was aborted.", error);
-    }); //curried
-  };
+  /* Track the form's isDirty status in our redux store (gridEditorSlice) */
+  React.useEffect(() => {
+    dispatch(setDirty(isDirty));
+  }, [isDirty, dispatch]);
 
   /* Handles when the form passes validation after submit. This function
   will check for an 'id' key or create a new one, then send the data
   back to UpdatePage for saving. */
-  const onSubmitValid = useCallback(
+  const onSubmitValid = React.useCallback(
     async (data) => {
       console.log("submitted data", data); //! DEBUG
 
       /* Send to UpdatePage for saving via "onSave" callback. "data" is the Editor's gridDataObject's data */
-      let res = await onSave(data);
+      const res = await onSave(data);
       if (!res) {
         throw new Error(
           "unsuccessful save (could be error or canceled by the user)"
@@ -181,41 +199,53 @@ const EditorController = ({
     [onSave]
   );
 
-  const onSubmitError = useCallback((errors) => {}, []);
+  const onSubmitError = React.useCallback((error) => {
+    console.error("Submission error", error);
+  }, []);
+
+  /* The save process can be initiated by save button click or hotkey */
+  const onSaveInitiation = (e?: React.SyntheticEvent) => {
+    handleSubmit(
+      onSubmitValid,
+      onSubmitError
+    )(e).catch((error) => {
+      console.warn("Save was aborted.", error);
+    }); //curried
+  };
 
   /* 
   This handles the Save button. It prevents the html form submission
   See https://github.com/react-hook-form/react-hook-form/issues/1025#issuecomment-585652414
   */
-  const onClickSaveButton = (e) => {
+  const onClickSaveButton: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
-    onSaveInitiation();
+    onSaveInitiation(e);
   };
 
   /* Perform the form submit when the hotkey save action fires */
-  const handleHotkeySave = (e) => {
+  const handleHotkeySave = (e: KeyboardEvent) => {
     e.preventDefault();
     /* Only try to submit form if form is dirty */
     if (isDirty) {
-      onSaveInitiation(e);
+      onSaveInitiation();
     }
   };
 
   /* Register the save hotkey. The callback is memoized within, but
   we pass isDirty as a dependency array to avoid stale closure. */
-  useHotkey("saveGridData", handleHotkeySave, null, [
+  useHotkey("saveGridData", handleHotkeySave, undefined, [
     isDirty,
     onSaveInitiation,
   ]);
 
   /* DemoBox show/hide */
   /* Track the toggle state of DemoBox */
-  const [demoBoxCollapsed, setDemoBoxCollapsed] = useState(
+  const [demoBoxCollapsed, setDemoBoxCollapsed] = React.useState(
     !settings.show_demoBox
   );
 
   /* Update the user settings when DemoBox toggle changes */
-  useEffect(() => {
+  React.useEffect(() => {
     dispatchSettings({
       type: "UPDATE",
       payload: {
@@ -231,14 +261,10 @@ const EditorController = ({
   };
 
   /* Register the hotkey for DemoBox toggle */
-  useHotkey(
-    "toggleDemoBox",
-    (e) => {
-      e.preventDefault();
-      handleToggleDemoBox();
-    },
-    null
-  );
+  useHotkey("toggleDemoBox", (e) => {
+    e.preventDefault();
+    handleToggleDemoBox();
+  });
 
   /* Register the hotkeys for navigation 
   
