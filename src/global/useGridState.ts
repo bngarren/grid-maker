@@ -1,7 +1,7 @@
 import * as React from "react";
 
 // Redux
-import { useAppSelector, useAppDispatch } from "../../hooks";
+import { useAppSelector, useAppDispatch } from "../hooks";
 import {
   addGridDataObject,
   clearGridDataObject,
@@ -47,14 +47,14 @@ const useGridState = () => {
 
   const _clearGridDataObject = React.useCallback(
     (gdoId: GridDataObjectId) => {
-      dispatch(clearGridDataObject({ id: gdoId }));
+      dispatch(clearGridDataObject({ gdoId: gdoId }));
     },
     [dispatch]
   );
 
   const _deleteGridDataObject = React.useCallback(
     (gdoId: GridDataObjectId) => {
-      dispatch(deleteGridDataObject({ id: gdoId }));
+      dispatch(deleteGridDataObject({ gdoId: gdoId }));
     },
     [dispatch]
   );

@@ -5,7 +5,10 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
-import { updateGridDataObject } from "../../global/gridStateSlice";
+import {
+  updateGridDataObject,
+  deleteGridDataObject,
+} from "../../global/gridStateSlice";
 import {
   GridDataObject,
   FormElementValues,
@@ -57,7 +60,7 @@ export const { updateSelectedGDO, setDirty } = gridEditorSlice.actions;
 
 export default gridEditorSlice.reducer;
 
-// Listener Middleware - used to listen to updateGridDataObject actions from gridStateslice
+// Listener Middleware - used to listen to actions from gridStateslice
 const listenerMiddleware = createListenerMiddleware();
 
 // Since selectedGDO tracks the same GDO as in gridState, we
@@ -75,6 +78,18 @@ listenerMiddleware.startListening({
             null
         )
       );
+  },
+});
+
+// This state's selectedGDO should be set to null if the represented GDO has been deleted
+listenerMiddleware.startListening({
+  actionCreator: deleteGridDataObject,
+  effect: async (action, listenerApi) => {
+    const gs = listenerApi.getState() as RootState;
+    // Only nullify selectedGDO if the observed action was an
+    // delete action to this GDO
+    gs.gridEditor.selectedGDO?.id === action.payload.gdoId &&
+      listenerApi.dispatch(updateSelectedGDO(null));
   },
 });
 export const { middleware: gridEditorMiddleware } = listenerMiddleware;

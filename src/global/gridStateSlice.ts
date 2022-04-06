@@ -63,9 +63,9 @@ const _addGridDataObject: CaseReducer<
 
 const _clearGridDataObject: CaseReducer<
   GridState,
-  PayloadAction<{ id: GridDataObjectId }>
+  PayloadAction<{ gdoId: GridDataObjectId }>
 > = (state, { payload }) => {
-  const gdo = state.gridData.find((g) => g.id === payload.id);
+  const gdo = state.gridData.find((g) => g.id === payload.gdoId);
   if (gdo) {
     gdo.elements.forEach((el) => {
       if (el.id !== state.template.indexElement) {
@@ -77,9 +77,9 @@ const _clearGridDataObject: CaseReducer<
 
 const _deleteGridDataObject: CaseReducer<
   GridState,
-  PayloadAction<{ id: GridDataObjectId }>
+  PayloadAction<{ gdoId: GridDataObjectId }>
 > = (state, { payload }) => {
-  const indexToDelete = state.gridData.findIndex((g) => g.id === payload.id);
+  const indexToDelete = state.gridData.findIndex((g) => g.id === payload.gdoId);
   if (indexToDelete !== -1) {
     state.gridData.splice(indexToDelete, 1);
   }

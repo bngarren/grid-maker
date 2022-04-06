@@ -1,19 +1,27 @@
 // MUI
 import { Menu, MenuItem } from "@mui/material";
 import { styled } from "@mui/system";
-
 import { bindMenu } from "material-ui-popup-state/hooks";
+
+// Types
+import { PopupState } from "material-ui-popup-state/core";
 
 /* Styling */
 const StyledMenuItem = styled(MenuItem)(() => ({
   fontSize: "1rem",
 }));
 
+interface ActionsPopover {
+  popupState: PopupState;
+  onSelectDelete: () => void;
+  onSelectClear: () => void;
+}
+
 const ActionsPopover = ({
   popupState,
-  onSelectDelete = (f) => f,
-  onSelectClear = (f) => f,
-}) => {
+  onSelectDelete,
+  onSelectClear,
+}: ActionsPopover) => {
   const handleSelectDelete = () => {
     popupState.close();
     onSelectDelete();

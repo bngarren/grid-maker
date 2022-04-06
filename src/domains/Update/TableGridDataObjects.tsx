@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
-import { styled } from "@mui/system";
+import { styled } from "@mui/material/styles";
 
 // Router
 import { Link } from "react-router-dom";
@@ -35,10 +35,23 @@ import { useAppSelector } from "../../hooks";
 import useGridState from "../../global/useGridState";
 import GridDataObjectActionsContext from "./GridDataObjectActionsContext";
 
+// Types
+import {
+  GridData,
+  GridDataObject,
+  GridDataObjectId,
+} from "../../global/gridState.types";
+
 // Defaults //TODO Need to put this in Settings
 const ROWS_PER_PAGE = 15;
 
 /* Styling */
+
+interface StyledFlags {
+  isSelected?: boolean;
+  component?: string;
+}
+
 const StyledTableCellHeader = styled(TableCell, {
   name: "TableGridDataObjects",
   slot: "header",
@@ -54,7 +67,7 @@ const StyledTableCell = styled(TableCell, {
   name: "TableGridDataObjects",
   slot: "tableCell",
   shouldForwardProp: (prop) => prop !== "isSelected",
-})(({ isSelected, component, theme }) => ({
+})<StyledFlags>(({ isSelected, component, theme }) => ({
   [theme.breakpoints.up("lg")]: {
     padding: "3px 6px 3px 6px",
   },
@@ -117,14 +130,14 @@ const buttonPaddingSx = {
     xs: "3px",
     md: "5px",
   },
-};
+} as const;
 
 const StyledMenuIconButton = styled(IconButton)(() => ({}));
 
 const menuIconStyle = {
   cursor: "pointer",
   fontSize: "1.5rem",
-};
+} as const;
 
 const StyledMenuIcon = styled(MenuIcon)(({ theme }) => ({
   ...menuIconStyle,
@@ -150,15 +163,14 @@ const TableGridDataObjects = () => {
   );
 
   // table pagination
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(ROWS_PER_PAGE);
+  const [page, setPage] = React.useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState<number>(ROWS_PER_PAGE);
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(event.target.value);
+  const handleChangeRowsPerPage: React.ChangeEventHandler<HTMLInputElement> = (
+    event
+  ) => {
+    setRowsPerPage(event.target.valueAsNumber);
     setPage(0);
-  };
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
   };
 
   /* Watches for changes in selectedKey and picks the correct paginated page that contains
@@ -198,7 +210,7 @@ const TableGridDataObjects = () => {
           )}
         </TableHead>
         <MyTableBody
-          data={gridData}
+          gridData={gridData}
           page={page}
           rowsPerPage={rowsPerPage}
           selectedKey={selectedKey}
@@ -206,11 +218,10 @@ const TableGridDataObjects = () => {
       </Table>
       <StyledTablePagination
         rowsPerPageOptions={[5, 15, 30]}
-        component="div"
         count={gridData.length}
         rowsPerPage={rowsPerPage}
         page={page}
-        onPageChange={handleChangePage}
+        onPageChange={(_, p) => setPage(p)}
         onRowsPerPageChange={handleChangeRowsPerPage}
         variant="footer"
       />
@@ -218,7 +229,20 @@ const TableGridDataObjects = () => {
   );
 };
 
-const MyTableBody = ({ data, page, rowsPerPage, selectedKey }) => {
+interface MyTableBodyProps {
+  gridData: GridData;
+  page: number;
+  rowsPerPage: number;
+  selectedKey: number;
+}
+
+const MyTableBody = ({
+  gridData,
+  page,
+  rowsPerPage,
+  selectedKey,
+}: MyTableBodyProps) => {
+  // Table row used for inputing new data
   const MyInputTableRow = (
     <TableRow>
       <StyledTableCell component="th" scope="row" align="right" colSpan={3}>
@@ -228,43 +252,44 @@ const MyTableBody = ({ data, page, rowsPerPage, selectedKey }) => {
   );
 
   return (
-    <>
-      <TableBody>
-        {data?.length !== 0 ? (
-          data
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((gdo, key) => {
-              let adjustedKey = key + page * rowsPerPage; // the key resets to index 0 for every pagination page
-              const isSelected = adjustedKey === selectedKey;
+    <TableBody>
+      {gridData?.length !== 0 ? (
+        gridData
+          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          .map((gdo, key) => {
+            const adjustedKey = key + page * rowsPerPage; // the key resets to index 0 for every pagination page
+            const isSelected = adjustedKey === selectedKey;
 
-              return (
-                <MyTableRow
-                  adjustedKey={adjustedKey}
-                  isSelected={isSelected}
-                  key={`MyTableRow-${gdo.id}`}
-                  gdo={gdo}
-                />
-              );
-            })
-        ) : (
-          <TableRow>
-            <TableCell scope="row" colSpan={3}>
-              {APP_TEXT.addFirstGridDataElementPrompt}
-              <Link to="/settings">{APP_TEXT.createLayoutLink}</Link>
-            </TableCell>
-          </TableRow>
-        )}
-        {MyInputTableRow}
-      </TableBody>
-    </>
+            return (
+              <MyTableRow
+                isSelected={isSelected}
+                key={`MyTableRow-${gdo.id}`}
+                gdo={gdo}
+              />
+            );
+          })
+      ) : (
+        <TableRow>
+          <TableCell scope="row" colSpan={3}>
+            {APP_TEXT.addFirstGridDataElementPrompt}
+            <Link to="/settings">{APP_TEXT.createLayoutLink}</Link>
+          </TableCell>
+        </TableRow>
+      )}
+      {MyInputTableRow}
+    </TableBody>
   );
 };
 
+interface MyTableRowProps {
+  isSelected: boolean;
+  gdo: GridDataObject;
+}
+
 const MyTableRow = React.memo(function MyTableRow({
-  adjustedKey,
   isSelected,
   gdo,
-}) {
+}: MyTableRowProps) {
   return (
     <TableRow key={gdo.id} hover selected={isSelected}>
       <StyledTableCell
@@ -273,8 +298,9 @@ const MyTableRow = React.memo(function MyTableRow({
         align="center"
         isSelected={isSelected}
       >
-        {gdo.indexElementValue || "#"}
+        {gdo.indexElementValue ?? "#"}
       </StyledTableCell>
+      {/* "Display value" for GDO */}
       <StyledTableCell>{gdo.elements[1].value}</StyledTableCell>
       <StyledTableCell>
         <GridDataObjectActions
@@ -286,10 +312,15 @@ const MyTableRow = React.memo(function MyTableRow({
   );
 });
 
+interface GridDataObjectActionsProps {
+  isSelected: boolean;
+  gridDataObjectId: GridDataObjectId;
+}
+
 const GridDataObjectActions = React.memo(function GridDataObjectActions({
   isSelected,
   gridDataObjectId,
-}) {
+}: GridDataObjectActionsProps) {
   const { gdoActionsEdit, gdoActionsDelete, gdoActionsClear } =
     React.useContext(GridDataObjectActionsContext);
 
@@ -299,43 +330,37 @@ const GridDataObjectActions = React.memo(function GridDataObjectActions({
     popupId: "actionsMenu",
   });
 
-  const handleOnClickMenu = (e) => {
+  const handleOnClickMenu: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     popupState.open(e);
   };
 
   return (
     <StyledActionsDiv>
-      {
-        <>
-          <StyledRadioButton
-            checked={isSelected}
-            onClick={gdoActionsEdit(gridDataObjectId)}
-            sx={{
-              ...buttonPaddingSx,
-            }}
-          />
-        </>
-      }
-      {
-        <StyledMenuIconButton
-          onClick={(e) => handleOnClickMenu(e, gridDataObjectId)}
-          size="large"
-          sx={{
-            ...buttonPaddingSx,
-          }}
-        >
-          {popupState.isOpen ? (
-            <StyledMenuOpenIcon fontSize="small" />
-          ) : (
-            <StyledMenuIcon fontSize="small" />
-          )}
-        </StyledMenuIconButton>
-      }
+      <StyledRadioButton
+        checked={isSelected}
+        onClick={gdoActionsEdit(gridDataObjectId)}
+        sx={{
+          ...buttonPaddingSx,
+        }}
+      />
+      <StyledMenuIconButton
+        onClick={handleOnClickMenu}
+        size="large"
+        sx={{
+          ...buttonPaddingSx,
+        }}
+      >
+        {popupState.isOpen ? (
+          <StyledMenuOpenIcon fontSize="small" />
+        ) : (
+          <StyledMenuIcon fontSize="small" />
+        )}
+      </StyledMenuIconButton>
+
       <ActionsPopover
         popupState={popupState}
-        gdoId={gridDataObjectId}
-        onSelectDelete={gdoActionsDelete(gridDataObjectId)}
-        onSelectClear={gdoActionsClear(gridDataObjectId)}
+        onSelectDelete={gdoActionsDelete(gridDataObjectId)} //curried
+        onSelectClear={gdoActionsClear(gridDataObjectId)} //curried
       />
     </StyledActionsDiv>
   );
