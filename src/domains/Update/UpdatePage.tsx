@@ -11,7 +11,7 @@ import EditorController from "./EditorController";
 import GridDataObjectActionsContext from "./GridDataObjectActionsContext";
 
 // Redux
-import { useSelector, useDispatch } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../../hooks";
 import { updateSelectedGDO } from "./gridEditorSlice";
 import useGridState from "../../global/useGridState";
 
@@ -19,10 +19,8 @@ import useGridState from "../../global/useGridState";
 import { getAdjacentGridDataObject } from "./updateHelpers";
 
 // Types
-import { RootState } from "../../store";
 import {
   FormElementValues,
-  GridDataObject,
   GridDataObjectId,
 } from "../../global/gridState.types";
 
@@ -35,14 +33,10 @@ const UpdatePage = () => {
     updateGridDataObject,
   } = useGridState();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const selectedGDO: GridDataObject | null = useSelector(
-    (state: RootState) => state.gridEditor.selectedGDO
-  );
-  const dirtyEditor = useSelector(
-    (state: RootState) => state.gridEditor.isDirty
-  );
+  const selectedGDO = useAppSelector((state) => state.gridEditor.selectedGDO);
+  const dirtyEditor = useAppSelector((state) => state.gridEditor.isDirty);
 
   const { confirm } = useDialog();
 
@@ -181,7 +175,6 @@ const UpdatePage = () => {
       // Handle case - user is attemping to change value of index element
       // ? Not sure if we want to allow duplicates
       // For now, will use dialog with option to overwrite
-      const changingIndexElementValue = 
 
       updateGridDataObject(selectedGDO.id, editorFormData);
       return true;

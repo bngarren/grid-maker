@@ -48,6 +48,8 @@ const store = configureStore({
 
 export default store;
 
+// RTK tutorial: https://redux-toolkit.js.org/tutorials/typescript#define-typed-hooks
 // refer to: https://www.typescriptlang.org/docs/handbook/2/typeof-types.html#the-typeof-type-operator
 // ReturnType<T> takes a function type and returns its return type
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

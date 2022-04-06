@@ -14,13 +14,12 @@ import EditorTextField from "./EditorTextField";
 import SnippetPopover from "./SnippetPopover";
 
 // Redux
-import { useSelector } from "react-redux";
+import { useAppSelector } from "../../hooks";
 
 // Util
 import { getCursorPos, setCursorPos } from "../../utils/CursorPos";
 
 // Types
-import { RootState } from "../../store";
 interface EditorProps {
   control: Control;
 }
@@ -43,7 +42,7 @@ const StyledEditorRoot = styled(Box, {
 }));
 
 const Editor = ({ control }: EditorProps) => {
-  const template = useSelector((state: RootState) => state.gridState.template);
+  const template = useAppSelector((state) => state.gridState.template);
 
   // Popover - using a hook from material-ui-popup-state package
   const popupState = usePopupState({ variant: "popover", popupId: "demoMenu" });

@@ -1,7 +1,7 @@
 import * as React from "react";
 
 // Redux
-import { useSelector, useDispatch } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../../hooks";
 import {
   addGridDataObject,
   clearGridDataObject,
@@ -13,7 +13,6 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 // Types
-import { RootState } from "../store";
 import {
   FormElementValues,
   GridDataObjectId,
@@ -30,12 +29,12 @@ const generateDefaultGridDataObject = () => {
 };
 
 const useGridState = () => {
-  const dispatch = useDispatch();
-  const gridTemplate: GridTemplate = useSelector(
-    (state: RootState) => state.gridState.template
+  const dispatch = useAppDispatch();
+  const gridTemplate: GridTemplate = useAppSelector(
+    (state) => state.gridState.template
   );
-  const gridData: GridData = useSelector(
-    (state: RootState) => state.gridState.gridData
+  const gridData: GridData = useAppSelector(
+    (state) => state.gridState.gridData
   );
 
   const addNewGridDataObject = React.useCallback(() => {

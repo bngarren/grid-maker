@@ -6,7 +6,7 @@ import { styled } from "@mui/system";
 import MenuIcon from "@mui/icons-material/Menu";
 
 // Redux
-import { useSelector, useDispatch } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../../hooks";
 import {
   swapTemplateRows,
   updateTemplateRowHeight,
@@ -30,22 +30,22 @@ import TemplateRowMenu from "./TemplateRowMenu";
 const StyledTemplateRowRoot = styled(Box, {
   name: "TemplateRoot",
   slot: "root",
-})(({ theme }) => ({}));
+})(() => ({}));
 
 const TemplateRow = ({ id, constraints, notLastRow }) => {
   const root = React.useRef();
 
-  const dispatch = useDispatch();
-  const indexElement = useSelector(
+  const dispatch = useAppDispatch();
+  const indexElement = useAppSelector(
     (state) => state.templateEditor.indexElement
   );
-  const row = useSelector((state) => state.templateEditor.rows.byId[id]);
+  const row = useAppSelector((state) => state.templateEditor.rows.byId[id]);
 
   /* Have to use lodash cloneDeep to get copy that doesn't mutate nested redux state 
   Refer to: https://redux.js.org/usage/structuring-reducers/immutable-update-patterns
   */
   const elements = cloneDeep(
-    useSelector((state) =>
+    useAppSelector((state) =>
       row.elements.map((_el) => state.templateEditor.elements.byId[_el])
     )
   );

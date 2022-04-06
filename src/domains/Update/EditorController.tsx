@@ -29,7 +29,7 @@ import Editor from "./Editor";
 import { ButtonStandard } from "../../components";
 
 // Redux
-import { useSelector, useDispatch } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../../hooks";
 import { setDirty } from "./gridEditorSlice";
 import { useSettings } from "../../global/Settings";
 
@@ -37,7 +37,6 @@ import { useSettings } from "../../global/Settings";
 import { APP_TEXT } from "../../utils";
 
 // Types
-import { RootState } from "../../store";
 import {
   TemplateElementId,
   GridDataObjectId,
@@ -130,14 +129,14 @@ const EditorController = ({
   onSave,
 }: EditorControllerProps) => {
   const { settings, dispatchSettings } = useSettings(); // TODO: move to redux store
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const currentGridDataObject = useSelector(
-    (state: RootState) => state.gridEditor.selectedGDO
+  const currentGridDataObject = useAppSelector(
+    (state) => state.gridEditor.selectedGDO
   );
 
-  const defaultFormValues: FormElementValues = useSelector(
-    (state: RootState) => state.gridEditor.defaultFormValues
+  const defaultFormValues: FormElementValues = useAppSelector(
+    (state) => state.gridEditor.defaultFormValues
   );
 
   const currentGridDataObjectIdRef = React.useRef<GridDataObjectId | null>(

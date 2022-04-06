@@ -6,7 +6,7 @@ import { styled } from "@mui/system";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
 // Redux
-import { useSelector, useDispatch } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../../hooks";
 import { setTemplate, addTemplateRow } from "./templateEditorSlice";
 import { updateTemplate } from "../../global/gridStateSlice";
 
@@ -37,7 +37,7 @@ const TEMPLATE_ROW_CONSTRAINTS = {
 const StyledGridBoxRoot = styled(Box, {
   name: "GridBox",
   slot: "root",
-})(({ theme }) => ({
+})(() => ({
   position: "relative",
   boxSizing: "content-box",
   width: GRIDBOX_CONSTRAINTS.width,
@@ -48,12 +48,12 @@ const StyledGridBoxRoot = styled(Box, {
 }));
 
 const TemplatePage = () => {
-  const gridStateTemplate = useSelector((state) => state.gridState.template);
-  const templateEditorState = useSelector((state) => state.templateEditor);
+  const gridStateTemplate = useAppSelector((state) => state.gridState.template);
+  const templateEditorState = useAppSelector((state) => state.templateEditor);
   const templateRows = templateEditorState.rows.allIds.map(
     (rowId) => templateEditorState.rows.byId[rowId]
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [errors, setErrors] = React.useState([]);
 

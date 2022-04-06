@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, memo } from "react";
+import * as React from "react";
 
 // MUI
 import {
@@ -10,7 +10,6 @@ import {
   TableBody,
   TablePagination,
   IconButton,
-  Typography,
   Paper,
   Radio,
 } from "@mui/material";
@@ -32,7 +31,7 @@ import ActionsPopover from "./ActionsPopover";
 import AddNewGridDataElementForm from "./AddNewGridDataElementForm";
 
 // Context/Redux
-import { useSelector } from "react-redux";
+import { useAppSelector } from "../../hooks";
 import useGridState from "../../global/useGridState";
 import GridDataObjectActionsContext from "./GridDataObjectActionsContext";
 
@@ -139,11 +138,11 @@ const StyledMenuOpenIcon = styled(MenuOpenIcon)(({ theme }) => ({
 
 const TableGridDataObjects = () => {
   const { gridData } = useGridState();
-  const selectedGDO = useSelector((state) => state.gridEditor.selectedGDO);
-  const selectedKey = useSelector((state) =>
+  const selectedGDO = useAppSelector((state) => state.gridEditor.selectedGDO);
+  const selectedKey = useAppSelector((state) =>
     state.gridState.gridData.findIndex((gdo) => gdo.id === selectedGDO?.id)
   );
-  const indexElement = useSelector(
+  const indexElement = useAppSelector(
     (state) =>
       state.gridState.template.elements.byId[
         state.gridState.template.indexElement
@@ -151,8 +150,8 @@ const TableGridDataObjects = () => {
   );
 
   // table pagination
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(ROWS_PER_PAGE);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(ROWS_PER_PAGE);
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(event.target.value);
@@ -165,7 +164,7 @@ const TableGridDataObjects = () => {
   /* Watches for changes in selectedKey and picks the correct paginated page that contains
   that gridDataObject. E.g. when using the navigation arrows and you move to a gridDataObject that is on
   a different paginated page */
-  useEffect(() => {
+  React.useEffect(() => {
     // Page should be set so that selectedKey is within range of [page*rowsPerPage, rowsPerPage + rowsPerPage - 1]
     const rowsTotal = gridData.length;
     const numOfPage = Math.ceil(rowsTotal / rowsPerPage);
@@ -261,7 +260,11 @@ const MyTableBody = ({ data, page, rowsPerPage, selectedKey }) => {
   );
 };
 
-const MyTableRow = memo(function MyTableRow({ adjustedKey, isSelected, gdo }) {
+const MyTableRow = React.memo(function MyTableRow({
+  adjustedKey,
+  isSelected,
+  gdo,
+}) {
   return (
     <TableRow key={gdo.id} hover selected={isSelected}>
       <StyledTableCell
@@ -283,13 +286,12 @@ const MyTableRow = memo(function MyTableRow({ adjustedKey, isSelected, gdo }) {
   );
 });
 
-const GridDataObjectActions = memo(function GridDataObjectActions({
+const GridDataObjectActions = React.memo(function GridDataObjectActions({
   isSelected,
   gridDataObjectId,
 }) {
-  const { gdoActionsEdit, gdoActionsDelete, gdoActionsClear } = useContext(
-    GridDataObjectActionsContext
-  );
+  const { gdoActionsEdit, gdoActionsDelete, gdoActionsClear } =
+    React.useContext(GridDataObjectActionsContext);
 
   // Popover - using a hook from material-ui-popup-state package
   const popupState = usePopupState({
@@ -338,30 +340,5 @@ const GridDataObjectActions = memo(function GridDataObjectActions({
     </StyledActionsDiv>
   );
 });
-
-/* Helper functions to calculate the number of characters in the
-longest string so that the column and font can be resized appropriately */
-
-function getLocationCharSize(data) {
-  return (() => {
-    let min = 3;
-    let max = 6;
-    data?.forEach((i) => {
-      min = Math.max(min, i.location?.length || 0);
-    });
-    return Math.min(min, max);
-  })();
-}
-
-function getTeamCharSize(data) {
-  return (() => {
-    let min = 4;
-    let max = 6;
-    data?.forEach((i) => {
-      min = Math.max(min, i.team?.length || 0);
-    });
-    return Math.min(min, max);
-  })();
-}
 
 export default TableGridDataObjects;
