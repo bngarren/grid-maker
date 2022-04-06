@@ -11,7 +11,6 @@ import {
   IconButton,
   Tooltip,
   Fade,
-  GridProps,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
@@ -19,7 +18,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import CircleIcon from "@mui/icons-material/Circle";
 
 // React-hook-form
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 
 // Hotkeys
 import useHotkey from "../../hooks/useHotkey";
@@ -29,7 +28,7 @@ import DemoBox from "./DemoBox";
 import Editor from "./Editor";
 import { ButtonStandard } from "../../components";
 
-// Context
+// Redux
 import { useSelector, useDispatch } from "react-redux";
 import { setDirty } from "./gridEditorSlice";
 import { useSettings } from "../../global/Settings";
@@ -42,13 +41,19 @@ import { RootState } from "../../store";
 import {
   TemplateElementId,
   GridDataObjectId,
+  FormElementValues,
 } from "../../global/gridState.types";
+
+/**
+ * Describes the shape of the form data.
+ * Each key is a template element Id and value is the value property of the Element
+ */
 interface EditorFormData {
   [key: TemplateElementId]: string;
 }
 interface EditorControllerProps {
   onNavigateGridDataObject: (reverse: boolean) => void;
-  onSave: (data: EditorFormData) => boolean;
+  onSave: (data: EditorFormData) => Promise<boolean>;
 }
 
 /* Styling */
@@ -131,7 +136,7 @@ const EditorController = ({
     (state: RootState) => state.gridEditor.selectedGDO
   );
 
-  const defaultFormValues = useSelector(
+  const defaultFormValues: FormElementValues = useSelector(
     (state: RootState) => state.gridEditor.defaultFormValues
   );
 
@@ -139,7 +144,7 @@ const EditorController = ({
     currentGridDataObject?.id ?? null
   );
 
-  const form = useForm({
+  const form = useForm<FormElementValues>({
     defaultValues: { ...defaultFormValues },
   });
 
@@ -184,11 +189,12 @@ const EditorController = ({
   /* Handles when the form passes validation after submit. This function
   will check for an 'id' key or create a new one, then send the data
   back to UpdatePage for saving. */
-  const onSubmitValid = React.useCallback(
+  const onSubmitValid: SubmitHandler<FormElementValues> = React.useCallback(
     async (data) => {
       console.log("submitted data", data); //! DEBUG
 
-      /* Send to UpdatePage for saving via "onSave" callback. "data" is the Editor's gridDataObject's data */
+      /* Send to UpdatePage for saving via "onSave" callback. "data" is the Editor's gridDataObject's
+      in the shape of FormElementValues */
       const res = await onSave(data);
       if (!res) {
         throw new Error(
@@ -204,12 +210,12 @@ const EditorController = ({
   }, []);
 
   /* The save process can be initiated by save button click or hotkey */
-  const onSaveInitiation = (e?: React.SyntheticEvent) => {
+  const onSaveInitiation = (event?: React.BaseSyntheticEvent) => {
     handleSubmit(
       onSubmitValid,
       onSubmitError
-    )(e).catch((error) => {
-      console.warn("Save was aborted.", error);
+    )(event).catch((error) => {
+      console.error("Save error.", error);
     }); //curried
   };
 

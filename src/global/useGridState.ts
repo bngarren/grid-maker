@@ -12,6 +12,15 @@ import {
 // Utility
 import { v4 as uuidv4 } from "uuid";
 
+// Types
+import { RootState } from "../store";
+import {
+  FormElementValues,
+  GridDataObjectId,
+  GridTemplate,
+  GridData,
+} from "./gridState.types";
+
 const generateDefaultGridDataObject = () => {
   return {
     id: uuidv4(),
@@ -22,8 +31,12 @@ const generateDefaultGridDataObject = () => {
 
 const useGridState = () => {
   const dispatch = useDispatch();
-  const gridTemplate = useSelector((state) => state.gridState.template);
-  const gridData = useSelector((state) => state.gridState.gridData);
+  const gridTemplate: GridTemplate = useSelector(
+    (state: RootState) => state.gridState.template
+  );
+  const gridData: GridData = useSelector(
+    (state: RootState) => state.gridState.gridData
+  );
 
   const addNewGridDataObject = React.useCallback(() => {
     dispatch(
@@ -34,30 +47,33 @@ const useGridState = () => {
   }, [dispatch]);
 
   const _clearGridDataObject = React.useCallback(
-    (gdoId) => {
+    (gdoId: GridDataObjectId) => {
       dispatch(clearGridDataObject({ id: gdoId }));
     },
     [dispatch]
   );
 
   const _deleteGridDataObject = React.useCallback(
-    (gdoId) => {
+    (gdoId: GridDataObjectId) => {
       dispatch(deleteGridDataObject({ id: gdoId }));
     },
     [dispatch]
   );
 
   const _updateGridDataObject = React.useCallback(
-    (gdoId, gdoElementValues) => {
+    (gdoId: GridDataObjectId, gdoElementValues: FormElementValues) => {
       dispatch(
-        updateGridDataObject({ gdoId: gdoId, elementValues: gdoElementValues })
+        updateGridDataObject({
+          gdoId: gdoId,
+          formElementValues: gdoElementValues,
+        })
       );
     },
     [dispatch]
   );
 
   const getGridDataObjectById = React.useCallback(
-    (gdoId) => {
+    (gdoId: GridDataObjectId) => {
       return gridData.find((g) => g.id === gdoId);
     },
     [gridData]

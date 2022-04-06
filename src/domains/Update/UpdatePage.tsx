@@ -18,6 +18,14 @@ import useGridState from "../../global/useGridState";
 // Utils/helpers
 import { getAdjacentGridDataObject } from "./updateHelpers";
 
+// Types
+import { RootState } from "../../store";
+import {
+  FormElementValues,
+  GridDataObject,
+  GridDataObjectId,
+} from "../../global/gridState.types";
+
 const UpdatePage = () => {
   const {
     gridData,
@@ -29,8 +37,12 @@ const UpdatePage = () => {
 
   const dispatch = useDispatch();
 
-  const selectedGDO = useSelector((state) => state.gridEditor.selectedGDO);
-  const dirtyEditor = useSelector((state) => state.gridEditor.isDirty);
+  const selectedGDO: GridDataObject | null = useSelector(
+    (state: RootState) => state.gridEditor.selectedGDO
+  );
+  const dirtyEditor = useSelector(
+    (state: RootState) => state.gridEditor.isDirty
+  );
 
   const { confirm } = useDialog();
 
@@ -39,9 +51,9 @@ const UpdatePage = () => {
    * @param {boolean} reverse If true, move backwards a gridDataObject. If false, move forwards.
    */
   const navigateAdjacentGridDataObject = React.useCallback(
-    async (reverse) => {
+    async (reverse: boolean) => {
       let proceed = true;
-      const selectedIndex = gridData.findIndex((g) => g.id === selectedGDO.id);
+      const selectedIndex = gridData.findIndex((g) => g.id === selectedGDO?.id);
       const gdo = gridData[selectedIndex];
       if (dirtyEditor) {
         proceed = false;
@@ -70,9 +82,16 @@ const UpdatePage = () => {
    * @param {number} key Id of the gridDataObject to edit
    */
   const handleGridDataObjectEdit = React.useCallback(
-    (gdoId) => async () => {
+    (gdoId: GridDataObjectId) => async () => {
       let proceed = true;
       const gdo = gridData.find((g) => g.id === gdoId);
+
+      // Error
+      if (gdo == null) {
+        selectedGDO && updateSelectedGDO(null);
+        return;
+      }
+
       if (dirtyEditor) {
         // Show a confirm dialog if there is data that isn't saved
         const dialogTemplate = {
@@ -100,11 +119,14 @@ const UpdatePage = () => {
    * @param {number} key Id of the gridDataObject to clear the data
    */
   const handleGridDataObjectClear = React.useCallback(
-    (gdoId) => async () => {
+    (gdoId: GridDataObjectId) => async () => {
       let proceed = false;
+      const gdo = gridData.find((g) => g.id === gdoId);
+
+      // Error
+      if (gdo == null) return;
 
       // Show a confirm dialog before clearing
-      const gdo = gridData.find((g) => g.id === gdoId);
       const dialogTemplate = {
         title: "Clear the data",
         content: `${gdo.id}
@@ -125,11 +147,14 @@ const UpdatePage = () => {
    * @param {number} key Id of the gridDataObject to delete
    */
   const handleGridDataObjectDelete = React.useCallback(
-    (gdoId) => async () => {
+    (gdoId: GridDataObjectId) => async () => {
       let proceed = false;
+      const gdo = gridData.find((g) => g.id === gdoId);
+
+      // Error
+      if (gdo == null) return;
 
       // Show a confirm dialog before removing
-      const gdo = gridData.find((g) => g.id === gdoId);
       const dialogTemplate = {
         title: "Remove this grid location and all data?",
         content: `${gdo.id}`,
@@ -149,8 +174,16 @@ const UpdatePage = () => {
    * Handles the Save action
    */
   const onEditorControllerSave = React.useCallback(
-    async (editorData) => {
-      updateGridDataObject(selectedGDO.id, editorData);
+    async (editorFormData: FormElementValues) => {
+      // Error - should not be saving if there is no selected GDO
+      if (selectedGDO == null) return false;
+
+      // Handle case - user is attemping to change value of index element
+      // ? Not sure if we want to allow duplicates
+      // For now, will use dialog with option to overwrite
+      const changingIndexElementValue = 
+
+      updateGridDataObject(selectedGDO.id, editorFormData);
       return true;
     },
     [updateGridDataObject, selectedGDO]
