@@ -1,6 +1,127 @@
 {
-	"files.associations": {
-		"*.js": "javascriptreact",
-		"*.tsx": "typescriptreact"
-	}
-}
+   "sync.gist": "bf4f282e9586c6d5b053feae1140f71b",
+   "sync.autoDownload": true,
+   "sync.autoUpload": true,
+   "sync.quietSync": true,
+   "remote.SSH.remotePlatform": {
+     "192.168.0.200": "linux",
+     "ubuntu-web-server": "linux",
+     "ubuntu-web-server-outside": "linux",
+     "159.89.91.255": "linux",
+     "DigitalOcean": "linux"
+   },
+   "editor.minimap.enabled": false,
+   "editor.tabSize": 3,
+   "editor.wordWrap": "on",
+   "editor.acceptSuggestionOnEnter": "smart",
+   "editor.quickSuggestionsDelay": 1,
+   "editor.quickSuggestions": {
+     "other": true,
+     "comments": false,
+     "strings": false
+   },
+   "editor.fontFamily": "Fira Code, Consolas, 'Courier New', monospace",
+   "editor.fontSize": 16,
+   "editor.fontLigatures": true,
+   "window.title": "${dirty}${remoteName}${separator}${activeFolderMedium}/${activeEditorShort}",
+   "workbench.colorTheme": "Default High Contrast",
+   "workbench.colorCustomizations": {
+     // https://glitchbone.github.io/vscode-base16-term/#/bright
+     "terminal.background": "#000000",
+     "terminal.foreground": "#E0E0E0",
+     "terminalCursor.background": "#E0E0E0",
+     "terminalCursor.foreground": "#E0E0E0",
+     "terminal.ansiBlack": "#000000",
+     "terminal.ansiBlue": "#6FB3D2",
+     "terminal.ansiBrightBlack": "#B0B0B0",
+     "terminal.ansiBrightBlue": "#6FB3D2",
+     "terminal.ansiBrightCyan": "#76C7B7",
+     "terminal.ansiBrightGreen": "#A1C659",
+     "terminal.ansiBrightMagenta": "#D381C3",
+     "terminal.ansiBrightRed": "#FB0120",
+     "terminal.ansiBrightWhite": "#FFFFFF",
+     "terminal.ansiBrightYellow": "#FDA331",
+     "terminal.ansiCyan": "#76C7B7",
+     "terminal.ansiGreen": "#A1C659",
+     "terminal.ansiMagenta": "#D381C3",
+     "terminal.ansiRed": "#FB0120",
+     "terminal.ansiWhite": "#E0E0E0",
+     "terminal.ansiYellow": "#FDA331"
+   },
+   "files.exclude": {
+     "node_modules/": true
+   },
+   "files.watcherExclude": {
+     "**/.git": true,
+     "**/.git/objects/**": true,
+     "**/.git/subtree-cache/**": true,
+     "**/node_modules/*/**": true,
+     "**/package-lock.json": true,
+   },
+   "search.exclude": {
+     "**/.git/objects/**": true,
+     "**/.git/subtree-cache/**": true,
+     "**/node_modules/**": true,
+     "**/.git": true,
+     "**/package-lock.json": true,
+   },
+   "explorer.compactFolders": false,
+   "explorer.sortOrder": "modified",
+   "workbench.statusBar.visible": true,
+   "workbench.activityBar.visible": true,
+   "files.autoSave": "afterDelay",
+   "gitlens.hovers.currentLine.over": "line",
+   "gitlens.currentLine.enabled": false,
+   "gitlens.codeLens.enabled": false,
+   "gitlens.hovers.enabled": false,
+   "javascript.updateImportsOnFileMove.enabled": "always",
+   "workbench.editor.highlightModifiedTabs": true,
+   "editor.bracketPairColorization.enabled": true,
+   "files.autoSaveDelay": 60000,
+   "javascript.referencesCodeLens.enabled": true,
+   "git.allowForcePush": true,
+   "git-graph.dialog.merge.noCommit": true,
+   "git-graph.dialog.resetCurrentBranchToCommit.mode": "Soft",
+   "git-graph.repository.showRemoteHeads": false,
+   "gitlens.views.commits.pullRequests.showForBranches": false,
+   "gitlens.views.commits.pullRequests.enabled": false,
+   "editor.formatOnSave": false,
+   "eslint.format.enable": true,
+   "eslint.alwaysShowStatus": true,
+   "[javascript]": {
+     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+     "editor.codeActionsOnSave": {
+       "source.fixAll.eslint": true
+     },
+   },
+   "[javascriptreact]": {
+     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+     "editor.codeActionsOnSave": {
+       "source.fixAll.eslint": true
+     },
+   },
+   "[typescript]": {
+     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+     "editor.codeActionsOnSave": {
+       "source.fixAll.eslint": true
+     },
+   },
+   "[typescriptreact]": {
+     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+     "editor.codeActionsOnSave": {
+       "source.fixAll.eslint": true
+     },
+   },
+   "[json]": {
+     "editor.defaultFormatter": "esbenp.prettier-vscode"
+   },
+   "[jsonc]": {
+     "editor.defaultFormatter": "esbenp.prettier-vscode"
+   },
+   "javascript.preferences.importModuleSpecifier": "relative",
+   "typescript.preferences.importModuleSpecifier": "relative",
+   "prettier.configPath": ".prettierrc",
+   "prettier.requireConfig": true,
+   "prettier.useEditorConfig": false,
+ }
+ 
