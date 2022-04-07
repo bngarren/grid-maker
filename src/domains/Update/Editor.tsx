@@ -18,6 +18,7 @@ import { useAppSelector } from "../../hooks";
 
 // Util
 import { getCursorPos, setCursorPos } from "../../utils/CursorPos";
+import { APP_TEXT } from "../../utils";
 
 // Types
 interface EditorProps {
@@ -157,21 +158,30 @@ const Editor = ({ control }: EditorProps) => {
             <Stack direction="row" spacing={1} key={rowId}>
               {template.rows.byId[rowId]?.elements.map((rel: string) => {
                 const templateElement = template.elements.byId[rel];
+                // Index element cannot be empty
+                const required = templateElement.id === template.indexElement;
                 return (
                   <Controller
                     key={rel}
                     control={control}
                     name={templateElement.id}
-                    render={({ field, fieldState: { isDirty } }) => (
+                    render={({ field, fieldState: { isDirty, error } }) => (
                       <EditorTextField
                         label={templateElement.name}
                         isDirty={isDirty}
+                        fieldError={error}
                         width={templateElement.widthPercent}
                         multiline={template.rows.byId[rowId].fillHeight}
                         minRows={2}
                         {...field}
                       />
                     )}
+                    rules={{
+                      required: {
+                        value: required,
+                        message: APP_TEXT.indexElementCannotBeEmpty,
+                      },
+                    }}
                   />
                 );
               })}

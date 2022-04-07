@@ -12,6 +12,7 @@ import {
   IconButton,
   Paper,
   Radio,
+  TableFooter,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
@@ -174,8 +175,7 @@ const TableGridDataObjects = () => {
   };
 
   /* Watches for changes in selectedKey and picks the correct paginated page that contains
-  that gridDataObject. E.g. when using the navigation arrows and you move to a gridDataObject that is on
-  a different paginated page */
+  that gridDataObject. E.g. when using the navigation arrows and you move to a gridDataObject that is on a different paginated page */
   React.useEffect(() => {
     // Page should be set so that selectedKey is within range of [page*rowsPerPage, rowsPerPage + rowsPerPage - 1]
     const rowsTotal = gridData.length;
@@ -195,7 +195,7 @@ const TableGridDataObjects = () => {
 
   return (
     <TableContainer component={Paper}>
-      <Table aria-label="table of items" sx={{ tableLayout: "fixed" }}>
+      <Table aria-label="table of items">
         <TableHead>
           {gridData?.length !== 0 ? (
             <TableRow data-testid="header row with info">
@@ -215,16 +215,19 @@ const TableGridDataObjects = () => {
           rowsPerPage={rowsPerPage}
           selectedKey={selectedKey}
         />
+        <TableFooter>
+          <TableRow>
+            <StyledTablePagination
+              rowsPerPageOptions={[5, 15, 30]}
+              count={gridData.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={(_, p) => setPage(p)}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </TableRow>
+        </TableFooter>
       </Table>
-      <StyledTablePagination
-        rowsPerPageOptions={[5, 15, 30]}
-        count={gridData.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(_, p) => setPage(p)}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        variant="footer"
-      />
     </TableContainer>
   );
 };
@@ -271,8 +274,7 @@ const MyTableBody = ({
       ) : (
         <TableRow>
           <TableCell scope="row" colSpan={3}>
-            {APP_TEXT.addFirstGridDataElementPrompt}
-            <Link to="/settings">{APP_TEXT.createLayoutLink}</Link>
+            {APP_TEXT.addFirstGridDataObjectPrompt}
           </TableCell>
         </TableRow>
       )}

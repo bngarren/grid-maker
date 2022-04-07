@@ -3,13 +3,6 @@
    "sync.autoDownload": true,
    "sync.autoUpload": true,
    "sync.quietSync": true,
-   "remote.SSH.remotePlatform": {
-     "192.168.0.200": "linux",
-     "ubuntu-web-server": "linux",
-     "ubuntu-web-server-outside": "linux",
-     "159.89.91.255": "linux",
-     "DigitalOcean": "linux"
-   },
    "editor.minimap.enabled": false,
    "editor.tabSize": 3,
    "editor.wordWrap": "on",
@@ -122,6 +115,8 @@
    "typescript.preferences.importModuleSpecifier": "relative",
    "prettier.configPath": ".prettierrc",
    "prettier.requireConfig": true,
-   "prettier.useEditorConfig": false,
+  "prettier.useEditorConfig": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.disableAutomaticTypeAcquisition": true,
  }
  

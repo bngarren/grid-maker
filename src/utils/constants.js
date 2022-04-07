@@ -71,10 +71,10 @@ export const DEFAULT_SETTINGS = {
 
 export const APP_TEXT = {
   addGridDataElement: "Add item",
-  addFirstGridDataElementPrompt: "Add your first item below, or ",
-  createLayoutLink: "create a layout",
+  addFirstGridDataObjectPrompt: "Add the first item to your grid below.",
   editorSave: "Save",
   editorReset: "Reset",
   hideDemoBox: "Hide example",
+  indexElementCannotBeEmpty: "The index cannot be empty.",
   showDemoBox: "Show example",
 };

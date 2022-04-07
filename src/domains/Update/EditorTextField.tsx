@@ -16,9 +16,11 @@ import { styled } from "@mui/material/styles";
 import CustomLabel from "./CustomLabel";
 
 // Types
+import { FieldError } from "react-hook-form";
 
 interface EditorTextFieldProps extends OutlinedInputProps {
   isDirty: boolean;
+  fieldError: FieldError | undefined;
   label?: string;
   InputLabelProps?: MuiInputLabelProps;
   InputProps?: MuiInputProps;
@@ -56,6 +58,7 @@ const EditorTextField = (
 ) => {
   const {
     isDirty,
+    fieldError,
     label,
     InputLabelProps,
     InputProps,
@@ -70,7 +73,11 @@ const EditorTextField = (
         htmlFor={`editorTextField-${label}`}
         {...InputLabelProps}
       >
-        <CustomLabel label={label} isDirty={isDirty} />
+        <CustomLabel
+          label={label}
+          isDirty={isDirty}
+          error={Boolean(fieldError)}
+        />
       </StyledInputLabel>
       <StyledInput
         id={`editorTextField-${label}`}
@@ -89,7 +96,16 @@ const EditorTextField = (
         {...rest}
         inputRef={ref}
       />
-      <FormHelperText id="editorTextField-helperText"></FormHelperText>
+      <FormHelperText
+        id="editorTextField-helperText"
+        error
+        required
+        margin="dense"
+        component="span"
+        sx={{ ml: 0 }}
+      >
+        {fieldError?.message || " "}
+      </FormHelperText>
     </FormControl>
   );
 };

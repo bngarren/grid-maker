@@ -185,9 +185,7 @@ const EditorController = ({
     dispatch(setDirty(isDirty));
   }, [isDirty, dispatch]);
 
-  /* Handles when the form passes validation after submit. This function
-  will check for an 'id' key or create a new one, then send the data
-  back to UpdatePage for saving. */
+  /* Handles when the form passes validation after submit. */
   const onSubmitValid: SubmitHandler<FormElementValues> = React.useCallback(
     async (data) => {
       console.log("submitted data", data); //! DEBUG

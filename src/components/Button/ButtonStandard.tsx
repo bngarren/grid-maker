@@ -1,11 +1,15 @@
 import * as React from "react";
+import { SystemStyleObject } from "@mui/system";
+import { Button, ButtonProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Button } from "@mui/material";
 
-interface ButtonStandardProps {
-  children: React.ReactNode;
+type ButtonStandardProps = {
+  /**
+   * whether to show as secondary
+   */
   secondary: boolean;
-}
+  sx: SystemStyleObject;
+} & ButtonProps;
 
 /* Styling */
 interface StyledFlags {
@@ -23,7 +27,6 @@ const StyledButton = styled(Button, {
   ...(secondary && {
     backgroundColor: theme.palette.primary.light,
     color: theme.palette.primary.contrastText,
-
     "&:hover": {
       backgroundColor: theme.palette.primary.main,
     },
@@ -36,7 +39,7 @@ const StyledButton = styled(Button, {
  * @returns A custom styled MUI Button
  */
 const ButtonStandard = (
-  props: ButtonStandardProps & React.ComponentPropsWithoutRef<typeof Button>,
+  props: ButtonStandardProps,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) => {
   const { children, secondary = false, ...rest } = props;
