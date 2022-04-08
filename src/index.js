@@ -10,11 +10,11 @@ import "./assets/fonts/roboto/roboto-v27-latin-regular.woff";
 import "./assets/fonts/roboto/roboto-v27-latin-700.woff2";
 import "./assets/fonts/roboto/roboto-v27-latin-700.woff";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+/* ReactDOM.render(<App />, document.getElementById("root")); */
 
-/* ReactDOM.render(
+ReactDOM.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
   document.getElementById("root")
-); */
+);
