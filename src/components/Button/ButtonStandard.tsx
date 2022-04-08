@@ -1,5 +1,4 @@
 import * as React from "react";
-import { SystemStyleObject } from "@mui/system";
 import { Button, ButtonProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
@@ -8,7 +7,6 @@ type ButtonStandardProps = {
    * whether to show as secondary
    */
   secondary: boolean;
-  sx: SystemStyleObject;
 } & ButtonProps;
 
 /* Styling */

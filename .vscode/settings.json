@@ -17,7 +17,7 @@
    "editor.fontSize": 16,
    "editor.fontLigatures": true,
    "window.title": "${dirty}${remoteName}${separator}${activeFolderMedium}/${activeEditorShort}",
-   "workbench.colorTheme": "Default High Contrast",
+   "workbench.colorTheme": "Winter is Coming (Dark Blue - No Italics)",
    "workbench.colorCustomizations": {
      // https://glitchbone.github.io/vscode-base16-term/#/bright
      "terminal.background": "#000000",
@@ -117,6 +117,5 @@
    "prettier.requireConfig": true,
   "prettier.useEditorConfig": false,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.disableAutomaticTypeAcquisition": true,
  }
  

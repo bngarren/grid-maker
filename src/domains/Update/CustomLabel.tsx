@@ -4,7 +4,7 @@ import CircleIcon from "@mui/icons-material/Circle";
 import { styled } from "@mui/material/styles";
 
 interface CustomLabelProps {
-  label: string;
+  label: string | undefined;
   isDirty: boolean;
   error: boolean;
 }
