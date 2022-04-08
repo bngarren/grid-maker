@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { GridDataObjectId } from "../../global/gridState.types";
+import { GridDataObjectId } from "../../../global/gridState.types";
 
 export type GridDataObjectActions = {
   gdoActionsEdit: (gdoId: GridDataObjectId) => () => Promise<void>;

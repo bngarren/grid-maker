@@ -70,7 +70,7 @@ export const DEFAULT_SETTINGS = {
 };
 
 export const APP_TEXT = {
-  addGridDataElement: "Add item",
+  addGridDataObject: "Add item",
   addFirstGridDataObjectPrompt: "Add the first item to your grid below.",
   editorSave: "Save",
   editorReset: "Reset",

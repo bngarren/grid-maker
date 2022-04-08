@@ -18,9 +18,10 @@ import {
   GridDataObjectId,
   GridTemplate,
   GridData,
+  GridDataObject,
 } from "./gridState.types";
 
-const generateDefaultGridDataObject = () => {
+const generateDefaultGridDataObject = (): GridDataObject => {
   return {
     id: uuidv4(),
     indexElementValue: "",
@@ -37,13 +38,21 @@ const useGridState = () => {
     (state) => state.gridState.gridData
   );
 
-  const addNewGridDataObject = React.useCallback(() => {
-    dispatch(
-      addGridDataObject({
-        ...generateDefaultGridDataObject(),
-      })
-    );
-  }, [dispatch]);
+  /**
+   * Adds a new gridDataObject to gridData with the supplied value used as
+   * the index (i.e. indexElementValue)
+   */
+  const addNewGridDataObject = React.useCallback(
+    (value: string) => {
+      dispatch(
+        addGridDataObject({
+          ...generateDefaultGridDataObject(),
+          indexElementValue: value,
+        })
+      );
+    },
+    [dispatch]
+  );
 
   const _clearGridDataObject = React.useCallback(
     (gdoId: GridDataObjectId) => {

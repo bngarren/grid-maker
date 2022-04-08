@@ -4,11 +4,11 @@ import * as React from "react";
 import { Grid } from "@mui/material";
 
 // Components
-import TableGridDataObjects from "./TableGridDataObjects";
+import TableGridDataObjects from "./TableGridDataObjects/TableGridDataObjects";
 import { useDialog } from "../../components";
 import EditorController from "./EditorController";
 
-import GridDataObjectActionsContext from "./GridDataObjectActionsContext";
+import GridDataObjectActionsContext from "./TableGridDataObjects/GridDataObjectActionsContext";
 
 // Redux
 import { useAppSelector, useAppDispatch } from "../../hooks";
@@ -27,7 +27,6 @@ import {
 const UpdatePage = () => {
   const {
     gridData,
-    addNewGridDataObject,
     clearGridDataObject,
     deleteGridDataObject,
     updateGridDataObject,
@@ -222,7 +221,6 @@ const UpdatePage = () => {
   return (
     <Grid container>
       <Grid item lg={4} md={5} sm={10} xs={12} sx={{ py: 0, px: 1, mb: 1 }}>
-        <button onClick={addNewGridDataObject}>Add new GDO</button>
         <GridDataObjectActionsContext.Provider value={gridDataObjectActions}>
           <TableGridDataObjects />
         </GridDataObjectActionsContext.Provider>

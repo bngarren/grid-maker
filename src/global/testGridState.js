@@ -74,12 +74,12 @@ const testGridState = {
     },
     {
       id: "9d387da6-4e32-4dcf-add7-126d9045474e",
-      indexElementValue: "",
+      indexElementValue: "3",
       elements: [
         {
           id: "d2a5e8c0-7a62-46aa-a0da-bea31ca406e9",
           name: "Bed",
-          value: "",
+          value: "3",
         },
         {
           id: "038df479-e5a6-41b6-af1f-4a8a2d0d0318",
