@@ -151,6 +151,7 @@ const EditorController = ({
     control,
     reset,
     formState: { isDirty, isSubmitted, isSubmitting, isSubmitSuccessful },
+    getFieldState,
     handleSubmit,
   } = form;
 
@@ -404,7 +405,7 @@ const EditorController = ({
             {renderToolbarTop()}
           </Grid>
           <Grid item xs={12}>
-            <Editor control={control} />
+            <Editor control={control} getFieldState={getFieldState} />
           </Grid>
           <Grid item xs={12}>
             {renderToolbarBottom()}

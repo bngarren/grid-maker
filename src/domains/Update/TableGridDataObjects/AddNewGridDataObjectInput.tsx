@@ -7,6 +7,8 @@ import {
   InputAdornment,
   IconButton,
   Zoom,
+  FormHelperText,
+  Fade,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
@@ -25,13 +27,15 @@ const StyledOutlinedInput = styled(OutlinedInput, {
 })(() => ({}));
 
 const AddNewGridDataObjectInput = () => {
-  const { addNewGridDataObject } = useGridState();
+  const { validateIndexElementValue, addNewGridDataObject } = useGridState();
   const [value, setValue] = React.useState<string>("");
+  const [helperText, setHelperText] = React.useState<string>("");
 
   const handleOnChange: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
     setValue(event.target.value);
+    setHelperText("");
   };
 
   /**
@@ -39,10 +43,15 @@ const AddNewGridDataObjectInput = () => {
    */
   const handleOnSubmit = () => {
     // Validate potential index Value
-    // TODO
+    const validation = validateIndexElementValue(value);
 
-    addNewGridDataObject(value);
-    setValue("");
+    if (!validation.status) {
+      setHelperText(validation.message ?? "");
+    } else {
+      addNewGridDataObject(value);
+      setValue("");
+      setHelperText("");
+    }
   };
 
   const handleOnKeyPress: React.KeyboardEventHandler<HTMLInputElement> = (
@@ -54,7 +63,20 @@ const AddNewGridDataObjectInput = () => {
   };
 
   return (
-    <Box>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        alignItems: "center",
+      }}
+    >
+      <Fade in={helperText?.length > 0}>
+        <FormHelperText error component="div" sx={{ px: 2 }}>
+          {helperText}
+        </FormHelperText>
+      </Fade>
+
       <StyledOutlinedInput
         placeholder={APP_TEXT.addGridDataObject}
         size="small"

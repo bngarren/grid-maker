@@ -76,5 +76,6 @@ export const APP_TEXT = {
   editorReset: "Reset",
   hideDemoBox: "Hide example",
   indexElementCannotBeEmpty: "The index cannot be empty.",
+  nonUniqueIndexElementValueInput: "This value has already been used.",
   showDemoBox: "Show example",
 };

@@ -7,7 +7,7 @@ import { styled } from "@mui/system";
 import { usePopupState } from "material-ui-popup-state/hooks";
 
 // React-hook-form
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, UseFormGetFieldState } from "react-hook-form";
 
 // Components
 import EditorTextField from "./EditorTextField";
@@ -15,14 +15,17 @@ import SnippetPopover from "./SnippetPopover";
 
 // Redux
 import { useAppSelector } from "../../hooks";
+import useGridState from "../../global/useGridState";
 
 // Util
 import { getCursorPos, setCursorPos } from "../../utils/CursorPos";
 import { APP_TEXT } from "../../utils";
+import { FormElementValues } from "../../global/gridState.types";
 
 // Types
-interface EditorProps {
-  control: Control;
+interface EditorProps<FormElementValues> {
+  control: Control<FormElementValues>;
+  getFieldState: UseFormGetFieldState<FormElementValues>;
 }
 interface CursorPos {
   pos: {
@@ -42,8 +45,9 @@ const StyledEditorRoot = styled(Box, {
   backgroundColor: theme.palette.grey[50],
 }));
 
-const Editor = ({ control }: EditorProps) => {
+const Editor = ({ control, getFieldState }: EditorProps<FormElementValues>) => {
   const template = useAppSelector((state) => state.gridState.template);
+  const { validateIndexElementValue } = useGridState();
 
   // Popover - using a hook from material-ui-popup-state package
   const popupState = usePopupState({ variant: "popover", popupId: "demoMenu" });
@@ -159,7 +163,8 @@ const Editor = ({ control }: EditorProps) => {
               {template.rows.byId[rowId]?.elements.map((rel: string) => {
                 const templateElement = template.elements.byId[rel];
                 // Index element cannot be empty
-                const required = templateElement.id === template.indexElement;
+                const isIndexElement =
+                  templateElement.id === template.indexElement;
                 return (
                   <Controller
                     key={rel}
@@ -178,8 +183,18 @@ const Editor = ({ control }: EditorProps) => {
                     )}
                     rules={{
                       required: {
-                        value: required,
+                        value: isIndexElement,
                         message: APP_TEXT.indexElementCannotBeEmpty,
+                      },
+                      validate: (value) => {
+                        // Validate the index element input
+                        if (!isIndexElement) return true;
+                        if (getFieldState(template.indexElement)?.isDirty) {
+                          const validation = validateIndexElementValue(value);
+                          return (
+                            (validation.status || validation.message) ?? ""
+                          );
+                        }
                       },
                     }}
                   />

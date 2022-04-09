@@ -143,7 +143,7 @@ const _updateGridDataObject: CaseReducer<
     // Loop through each element and update the element if it
     // was included in the payload
     stateGDO.elements.forEach((el: GridDataObjectElement) => {
-      if (payload.formElementValues[el.id]) {
+      if (payload.formElementValues[el.id] != null) {
         el.value = payload.formElementValues[el.id];
 
         // Update the GDO's indexElementValue, if necessary, i.e.
