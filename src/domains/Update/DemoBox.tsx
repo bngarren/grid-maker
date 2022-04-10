@@ -7,9 +7,10 @@ import { Control, useWatch } from "react-hook-form";
 
 // Context and utility
 import { useSettings } from "../../global/Settings";
-import { getWidth } from "../Document/MyDocument";
+import { getWidthInPx, getDocumentStyle } from "../Document/MyDocument";
 import useGridState from "../../global/useGridState";
 import { TemplateElementId } from "../../global/gridState.types";
+import { ptToPx } from "../../utils";
 
 //Types
 
@@ -26,16 +27,17 @@ const StyledGridBoxRoot = styled(Paper, {
   name: "DemoBox",
   slot: "Root",
   shouldForwardProp: (prop) => prop !== "convertedWidth",
-})<{ convertedWidth?: string }>(({ theme, convertedWidth }) => ({
+})<{ convertedWidth?: number }>(({ theme, convertedWidth }) => ({
   position: "relative",
   backgroundColor: "white",
-  height: "250pt",
+  minHeight: getDocumentStyle("height"),
+  height: getDocumentStyle("height"),
   border: "1px solid",
   borderColor: theme.palette.primary.main,
-  fontSize: "9pt",
+  fontSize: ptToPx(8),
   fontFamily: "Roboto",
-  minWidth: convertedWidth,
-  maxWidth: convertedWidth,
+  minWidth: `${convertedWidth}px`,
+  maxWidth: `${convertedWidth}px`,
 }));
 
 const StyledGridBoxRow = styled(Box, {
@@ -53,6 +55,10 @@ const StyledGridBoxElement = styled(Box, {
   shouldForwardProp: (prop) => prop !== "widthPercent",
 })<{ widthPercent: number }>(({ widthPercent }) => ({
   width: `${widthPercent}%`,
+  paddingLeft: getDocumentStyle("elementPaddingX"),
+  paddingRight: getDocumentStyle("elementPaddingX"),
+  lineHeight: getDocumentStyle("lineHeight"),
+  letterSpacing: getDocumentStyle("letterSpacing"),
   //backgroundColor: getColor(),
 }));
 
@@ -64,7 +70,9 @@ const DemoBox = ({ control, collapsed }: DemoBoxProps) => {
   /* react-hook-form */
   const data: { [key: TemplateElementId]: string } = useWatch({ control });
 
-  const convertedWidth = getWidth(settings.document_cols_per_page, 1.15);
+  const convertedWidth = getWidthInPx(settings.document_cols_per_page);
+
+  console.log("convertedWidth (px)", convertedWidth); //!DEBUG
 
   return (
     <>
@@ -77,8 +85,8 @@ const DemoBox = ({ control, collapsed }: DemoBoxProps) => {
             margin: "auto",
             overflow: settings.document_cols_per_page > 1 ? "hidden" : "auto",
             maxWidth: {
-              xs: convertedWidth,
-              md: `min(50vw, ${convertedWidth})`,
+              xs: `${convertedWidth}px`,
+              md: `min(50vw, ${convertedWidth})px`,
             },
           }}
         >
