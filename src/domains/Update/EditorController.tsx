@@ -395,7 +395,7 @@ const EditorController = ({
   if (currentGridDataObject) {
     return (
       <FormProvider {...form}>
-        <DemoBox collapsed={demoBoxCollapsed} />
+        <DemoBox control={control} collapsed={demoBoxCollapsed} />
         <StyledGridContainer
           container
           isDirty={isDirty}
