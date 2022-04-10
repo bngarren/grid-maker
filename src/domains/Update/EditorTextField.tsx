@@ -76,7 +76,7 @@ const EditorTextField = (
         <CustomLabel
           label={label}
           isDirty={isDirty}
-          error={Boolean(fieldError)}
+          error={fieldError != null}
         />
       </StyledInputLabel>
       <StyledInput

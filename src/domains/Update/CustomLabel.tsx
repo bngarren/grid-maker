@@ -12,16 +12,24 @@ interface CustomLabelProps {
 const StyledCircleIcon = styled(CircleIcon, {
   name: "CustomLabel",
   slot: "icon",
-  shouldForwardProp: (prop) => prop !== "styleError",
-})<{ styleError: boolean }>(({ styleError, theme }) => ({
-  fontSize: "0.70rem",
-  color: theme.palette.secondary.dark,
-  paddingLeft: "2px",
-  transition: "visibility 0s, opacity 0.3s linear",
-  ...(styleError && {
-    color: theme.palette.error.main,
-  }),
-}));
+  shouldForwardProp: (prop) => prop !== "styleError" && prop !== "isDirty",
+})<{ styleError: boolean; isDirty: boolean }>(
+  ({ styleError, isDirty, theme }) => ({
+    fontSize: "0.70rem",
+    color: theme.palette.secondary.dark,
+    paddingLeft: "2px",
+    transition: "visibility 0s, opacity 0.3s linear",
+    visibility: "hidden",
+    opacity: 0,
+    ...(styleError && {
+      color: theme.palette.error.main,
+    }),
+    ...(isDirty && {
+      visibility: "visible",
+      opacity: 1,
+    }),
+  })
+);
 
 const CustomLabel = ({ label, isDirty, error }: CustomLabelProps) => {
   return (
@@ -43,13 +51,7 @@ const CustomLabel = ({ label, isDirty, error }: CustomLabelProps) => {
         {label}
       </Typography>
 
-      <StyledCircleIcon
-        styleError={error}
-        sx={{
-          visibility: isDirty ? "visibile" : "hidden",
-          opacity: isDirty ? 1 : 0,
-        }}
-      />
+      <StyledCircleIcon styleError={error} isDirty={isDirty} />
     </Box>
   );
 };

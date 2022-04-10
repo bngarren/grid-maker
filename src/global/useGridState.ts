@@ -56,28 +56,35 @@ const useGridState = () => {
   );
 
   /**
-   * Checks a given indexElementValue for being unique
+   * Checks a given indexElementValue for being valid and unique
    *@returns {Object} status: true if success, false if error. message: ""
    */
   const validateIndexElementValue = React.useCallback(
     (value: string): { status: boolean; message?: string } => {
-      let status = true;
-      let message = "";
+      const result = {
+        status: true,
+        message: "",
+      };
 
+      // Cannot be empty
+      if (value.trim().length === 0) {
+        result.status = false;
+        result.message = APP_TEXT.noEmptyIndexElementValueInput;
+        return result;
+      }
+
+      // Must be unique
       gridData.forEach((gdo) => {
         const indexElement = gdo.elements.find(
           (f) => f.id === gridTemplate.indexElement
         );
         if (indexElement?.value === value) {
-          status = false;
-          message = APP_TEXT.nonUniqueIndexElementValueInput;
+          result.status = false;
+          result.message = APP_TEXT.nonUniqueIndexElementValueInput;
         }
       });
 
-      return {
-        status: status,
-        message,
-      };
+      return result;
     },
     [gridData, gridTemplate.indexElement]
   );
@@ -108,6 +115,10 @@ const useGridState = () => {
     [dispatch]
   );
 
+  const getIndexElementName = React.useCallback(() => {
+    return gridTemplate.elements.byId[gridTemplate.indexElement].name;
+  }, [gridTemplate.elements.byId, gridTemplate.indexElement]);
+
   const getGridDataObjectById = React.useCallback(
     (gdoId: GridDataObjectId) => {
       return gridData.find((g) => g.id === gdoId);
@@ -123,6 +134,7 @@ const useGridState = () => {
     clearGridDataObject: _clearGridDataObject,
     deleteGridDataObject: _deleteGridDataObject,
     updateGridDataObject: _updateGridDataObject,
+    getIndexElementName,
     getGridDataObjectById,
   };
 };

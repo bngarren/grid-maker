@@ -23,6 +23,7 @@ import GetAppIcon from "@mui/icons-material/GetApp";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MenuIcon from "@mui/icons-material/Menu";
+import WysiwygIcon from "@mui/icons-material/Wysiwyg";
 
 // Logo
 import { ReactComponent as Logo } from "../../assets/logo_color.svg";
@@ -205,7 +206,7 @@ const HeaderMenu = ({ onClickLogin = (f) => f, onDownloadPdf = (f) => f }) => {
     /*eslint-disable react/jsx-key*/
     <MenuItem onClick={handleEdit} disabled={Boolean(useMatch("/update"))}>
       <ListItemIcon>
-        <ViewListIcon />
+        <WysiwygIcon />
       </ListItemIcon>
       <StyledListItemText>Edit Grid</StyledListItemText>
     </MenuItem>,
@@ -263,7 +264,7 @@ const HeaderMenu = ({ onClickLogin = (f) => f, onDownloadPdf = (f) => f }) => {
           onClick={handleEdit}
           disabled={Boolean(useMatch("/update"))}
         >
-          <ViewListIcon />
+          <WysiwygIcon />
         </StyledIconButton>
       </span>
     </Tooltip>,

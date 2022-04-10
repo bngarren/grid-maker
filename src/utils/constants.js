@@ -43,8 +43,8 @@ export const EXAMPLE_SNIPPETS = [
 export const DEFAULT_HOTKEYS = {
   navigateNextGridDataElement: "shift+.",
   navigatePreviousGridDataElement: "shift+,",
-  saveGridData: "ctrl+s",
-  toggleDemoBox: "ctrl+d",
+  saveGridData: "ctrl+s, command+s",
+  toggleDemoBox: "ctrl+d, command+d",
 };
 
 export const DEFAULT_SETTINGS = {
@@ -70,12 +70,13 @@ export const DEFAULT_SETTINGS = {
 };
 
 export const APP_TEXT = {
-  addGridDataObject: "Add item",
+  addGridDataObject: "Add ",
   addFirstGridDataObjectPrompt: "Add the first item to your grid below.",
   editorSave: "Save",
   editorReset: "Reset",
   hideDemoBox: "Hide example",
   indexElementCannotBeEmpty: "The index cannot be empty.",
   nonUniqueIndexElementValueInput: "This value has already been used.",
+  noEmptyIndexElementValueInput: "Cannot be empty.",
   showDemoBox: "Show example",
 };

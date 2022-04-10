@@ -10,7 +10,7 @@ import { useSettings } from "../global/Settings";
  */
 const useUserHotkey = (action: string): string | undefined => {
   const { settings } = useSettings();
-  let hotkey;
+  let hotkey = "";
   try {
     if (action in settings.hotkeys) {
       hotkey = settings.hotkeys[action];

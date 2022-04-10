@@ -47,7 +47,13 @@ const TableBody = ({
         </MuiTableRow>
       )}
       <MuiTableRow>
-        <StyledTableCell component="th" scope="row" align="right" colSpan={3}>
+        <StyledTableCell
+          component="th"
+          scope="row"
+          align="right"
+          colSpan={3}
+          sx={{ height: "5rem" }}
+        >
           <AddNewGridDataObjectInput />
         </StyledTableCell>
       </MuiTableRow>

@@ -27,7 +27,11 @@ const StyledOutlinedInput = styled(OutlinedInput, {
 })(() => ({}));
 
 const AddNewGridDataObjectInput = () => {
-  const { validateIndexElementValue, addNewGridDataObject } = useGridState();
+  const {
+    validateIndexElementValue,
+    addNewGridDataObject,
+    getIndexElementName,
+  } = useGridState();
   const [value, setValue] = React.useState<string>("");
   const [helperText, setHelperText] = React.useState<string>("");
 
@@ -35,6 +39,11 @@ const AddNewGridDataObjectInput = () => {
     event
   ) => {
     setValue(event.target.value);
+    setHelperText("");
+  };
+
+  const reset = () => {
+    setValue("");
     setHelperText("");
   };
 
@@ -49,8 +58,7 @@ const AddNewGridDataObjectInput = () => {
       setHelperText(validation.message ?? "");
     } else {
       addNewGridDataObject(value);
-      setValue("");
-      setHelperText("");
+      reset();
     }
   };
 
@@ -78,11 +86,12 @@ const AddNewGridDataObjectInput = () => {
       </Fade>
 
       <StyledOutlinedInput
-        placeholder={APP_TEXT.addGridDataObject}
+        placeholder={`${APP_TEXT.addGridDataObject} ${getIndexElementName()}`}
         size="small"
         value={value}
         onChange={handleOnChange}
         onKeyPress={handleOnKeyPress}
+        onBlur={reset}
         inputProps={{
           size: 10,
         }}
