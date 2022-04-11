@@ -3,20 +3,35 @@ import * as React from "react";
 import DefaultTemplate from "./GenerateDefaultTemplate";
 
 // Redux
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../hooks";
 import {
   updateTemplateRowElements,
   updateIndexElement,
 } from "./templateEditorSlice";
 
+import {
+  TemplateElement,
+  TemplateElementId,
+  TemplateRowId,
+} from "../../global/gridState.types";
+import { TemplateRowConstraints } from "./TemplatePage";
+
+function roundToTwo(x: number) {
+  return Math.round(x * 100) / 100;
+}
+
 /* This hook manages a local "working" state of template elements for a row.  */
-const useElements = (templateRowId, initialValue, constraints) => {
+const useElements = (
+  templateRowId: TemplateRowId,
+  initialValue: TemplateElement[],
+  constraints: TemplateRowConstraints
+) => {
   const prevState = React.useRef(initialValue);
   const [elements, setElements] = React.useState(initialValue);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Actual DOM elements - so we can get dynamic size info from the div's
-  const refs = React.useRef([]);
+  const refs = React.useRef<HTMLDivElement[]>([]);
 
   /* Reset this component's state when new/different initialValue comes through */
   React.useEffect(() => {
@@ -48,15 +63,22 @@ const useElements = (templateRowId, initialValue, constraints) => {
       return;
     }
     const newWidthPercent = roundToTwo(100 / (elements.length + 1));
-    const newElementsArray = elements.map((el) => {
+    const newElementsArray: typeof elements = elements.map((el) => {
       return {
         ...el,
-        widthPercent: newWidthPercent,
+        styles: {
+          ...el.styles,
+          widthPercent: newWidthPercent,
+        },
       };
     });
+    const defaultElement = DefaultTemplate.element();
     newElementsArray.push({
-      ...DefaultTemplate.element(),
-      widthPercent: newWidthPercent,
+      ...defaultElement,
+      styles: {
+        ...defaultElement.styles,
+        widthPercent: newWidthPercent,
+      },
     });
     setElements(newElementsArray);
   }, [elements, setElements, constraints.maxElements]);
@@ -67,12 +89,15 @@ const useElements = (templateRowId, initialValue, constraints) => {
       if (elements.length > 2) {
         newWidthPercent = roundToTwo(100 / (elements.length - 1));
       }
-      const newElementsArray = elements
+      const newElementsArray: typeof elements = elements
         .filter((f) => f.id !== elementID)
         .map((el) => {
           return {
             ...el,
-            widthPercent: newWidthPercent,
+            styles: {
+              ...el.styles,
+              widthPercent: newWidthPercent,
+            },
           };
         });
       setElements(newElementsArray);
@@ -81,7 +106,7 @@ const useElements = (templateRowId, initialValue, constraints) => {
   );
 
   const handleResizeRight = React.useCallback(
-    (e, elementID) => {
+    (e: React.MouseEvent, elementID: TemplateElementId) => {
       e.preventDefault();
 
       const elementIndex = elements.findIndex((f) => f.id === elementID);
@@ -91,25 +116,26 @@ const useElements = (templateRowId, initialValue, constraints) => {
         ? constraints.widthDelta * 2
         : constraints.widthDelta;
 
-      let newElementsArray = [...elements];
+      const newElementsArray = [...elements];
       if (elements.length > 1) {
         const nextElement = newElementsArray[elementIndex + 1];
 
         if (!nextElement) return; // can't resize this direction
 
         if (
-          nextElement.widthPercent - width_delta >=
+          nextElement.styles.widthPercent - width_delta >=
           constraints.minElementWidth
         ) {
-          newElementsArray[elementIndex].widthPercent += width_delta;
-          nextElement.widthPercent -= width_delta;
+          newElementsArray[elementIndex].styles.widthPercent += width_delta;
+          nextElement.styles.widthPercent -= width_delta;
         } else {
           // not enough room for a full width_delta
-          let remaining_width_delta =
-            nextElement.widthPercent - constraints.minElementWidth;
+          const remaining_width_delta =
+            nextElement.styles.widthPercent - constraints.minElementWidth;
 
-          newElementsArray[elementIndex].widthPercent += remaining_width_delta;
-          nextElement.widthPercent = constraints.minElementWidth;
+          newElementsArray[elementIndex].styles.widthPercent +=
+            remaining_width_delta;
+          nextElement.styles.widthPercent = constraints.minElementWidth;
         }
       }
       setElements(newElementsArray);
@@ -118,7 +144,7 @@ const useElements = (templateRowId, initialValue, constraints) => {
   );
 
   const handleResizeLeft = React.useCallback(
-    (e, elementID) => {
+    (e: React.MouseEvent, elementID: TemplateElementId) => {
       e.preventDefault();
 
       const elementIndex = elements.findIndex((f) => f.id === elementID);
@@ -128,25 +154,26 @@ const useElements = (templateRowId, initialValue, constraints) => {
         ? constraints.widthDelta * 2
         : constraints.widthDelta;
 
-      let newElementsArray = [...elements];
+      const newElementsArray = [...elements];
       if (elements.length > 1) {
         const prevElement = newElementsArray[elementIndex - 1];
 
         if (!prevElement) return; // can't resize this direction
 
         if (
-          prevElement.widthPercent - width_delta >=
+          prevElement.styles.widthPercent - width_delta >=
           constraints.minElementWidth
         ) {
-          newElementsArray[elementIndex].widthPercent += width_delta;
-          prevElement.widthPercent -= width_delta;
+          newElementsArray[elementIndex].styles.widthPercent += width_delta;
+          prevElement.styles.widthPercent -= width_delta;
         } else {
           // not enough room for a full width_delta
-          let remaining_width_delta =
-            prevElement.widthPercent - constraints.minElementWidth;
+          const remaining_width_delta =
+            prevElement.styles.widthPercent - constraints.minElementWidth;
 
-          newElementsArray[elementIndex].widthPercent += remaining_width_delta;
-          prevElement.widthPercent = constraints.minElementWidth;
+          newElementsArray[elementIndex].styles.widthPercent +=
+            remaining_width_delta;
+          prevElement.styles.widthPercent = constraints.minElementWidth;
         }
       }
 
@@ -157,7 +184,7 @@ const useElements = (templateRowId, initialValue, constraints) => {
 
   const updateElement = React.useCallback(
     (elementID, newElementData) => {
-      let updatedElements = elements.map((el) => {
+      const updatedElements = elements.map((el) => {
         return el.id === elementID ? { ...el, ...newElementData } : el;
       });
       setElements(updatedElements);
@@ -184,7 +211,3 @@ const useElements = (templateRowId, initialValue, constraints) => {
   };
 };
 export default useElements;
-
-function roundToTwo(x) {
-  return Math.round(x * 100) / 100;
-}

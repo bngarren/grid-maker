@@ -5,20 +5,42 @@ import {
   IconButton,
   FormControlLabel,
   Checkbox,
+  PopoverProps,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
 // Reduce
-import { useSelector, useDispatch } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../../hooks";
 import { updateTemplateRowFillHeight } from "./templateEditorSlice";
 
+// Types
+import { PopupState } from "material-ui-popup-state/core";
+import { TemplateRowId } from "../../global/gridState.types";
+interface TemplateRowMenuProps {
+  popupState: PopupState;
+  rowId: TemplateRowId;
+  onAddElement: () => void;
+}
+
 const TemplateRowMenu = React.forwardRef(
-  ({ popupState, rowId, onAddElement, ...props }, ref) => {
-    const dispatch = useDispatch();
-    const row = useSelector((state) => state.templateEditor.rows.byId[rowId]);
-    const reset = React.useCallback((f) => f, []);
+  (
+    {
+      popupState,
+      rowId,
+      onAddElement,
+      ...props
+    }: TemplateRowMenuProps & PopoverProps,
+    ref: React.ForwardedRef<HTMLDivElement>
+  ) => {
+    const dispatch = useAppDispatch();
+    const row = useAppSelector(
+      (state) => state.templateEditor.rows.byId[rowId]
+    );
+    const reset = React.useCallback(() => {
+      return;
+    }, []);
 
     React.useEffect(() => {
       reset();
@@ -66,7 +88,6 @@ const TemplateRowMenu = React.forwardRef(
           }}
         >
           <Box
-            name="header"
             sx={{
               display: "flex",
               flexDirection: "row",
@@ -78,7 +99,6 @@ const TemplateRowMenu = React.forwardRef(
             </IconButton>
           </Box>
           <Box
-            name="content"
             sx={{
               flexGrow: 1,
             }}
@@ -97,7 +117,6 @@ const TemplateRowMenu = React.forwardRef(
             />
           </Box>
           <Box
-            name="footer"
             sx={{
               display: "flex",
               flexDirection: "row",

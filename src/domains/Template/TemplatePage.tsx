@@ -13,6 +13,8 @@ import { updateTemplate } from "../../global/gridStateSlice";
 // Components
 import TemplateRow from "./TemplateRow";
 
+// Hard coded
+
 const GRIDBOX_CONSTRAINTS = {
   width: 700,
   height: 400,
@@ -25,7 +27,16 @@ const GRIDBOX_CONSTRAINTS = {
 /* how much an element increments/decrements in size */
 const ELEMENT_WIDTH_DELTA = 5;
 
-const TEMPLATE_ROW_CONSTRAINTS = {
+// Types
+export interface TemplateRowConstraints {
+  maxWidth: number;
+  minHeight: number;
+  minElementWidth: number;
+  maxElements: number;
+  widthDelta: number;
+}
+
+const templateRowConstraints: TemplateRowConstraints = {
   maxWidth: GRIDBOX_CONSTRAINTS.width,
   minHeight: GRIDBOX_CONSTRAINTS.minRowHeight,
   minElementWidth: GRIDBOX_CONSTRAINTS.minElementWidth,
@@ -55,7 +66,7 @@ const TemplatePage = () => {
   );
   const dispatch = useAppDispatch();
 
-  const [errors, setErrors] = React.useState([]);
+  const [errors, setErrors] = React.useState<string[]>([]);
 
   // Use the gridState template on mount of TemplatePage
   React.useEffect(() => {
@@ -66,7 +77,7 @@ const TemplatePage = () => {
   }, []);
 
   React.useEffect(() => {
-    let newErrors = [];
+    const newErrors = [];
     if (templateEditorState.indexElement == null) {
       newErrors.push("Missing index element");
     }
@@ -115,7 +126,7 @@ const TemplatePage = () => {
               <TemplateRow
                 key={tr.id}
                 id={tr.id}
-                constraints={TEMPLATE_ROW_CONSTRAINTS}
+                constraints={templateRowConstraints}
                 notLastRow={notLastRow}
               />
             );
@@ -132,27 +143,8 @@ const TemplatePage = () => {
           </IconButton>
         </Box>
       </StyledGridBoxRoot>
-      <JSONPreview data={JSON.stringify(templateEditorState, null, 3)} />
     </div>
   );
 };
 
 export default TemplatePage;
-
-const JSONPreview = ({ data }) => {
-  return (
-    <Box
-      sx={{
-        margin: "40px auto 0px auto",
-        fontSize: "0.8rem",
-        backgroundColor: "rgba(255, 215, 0, 0.1)",
-        height: "400px",
-        overflow: "auto",
-      }}
-    >
-      <pre style={{ textAlign: "left" }}>
-        <code>{data}</code>
-      </pre>
-    </Box>
-  );
-};

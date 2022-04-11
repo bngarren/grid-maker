@@ -22,6 +22,15 @@ import SwapButton from "./SwapButton";
 import Element from "./Element";
 import TemplateRowMenu from "./TemplateRowMenu";
 
+// Types
+import { TemplateElement, TemplateRowId } from "../../global/gridState.types";
+import { TemplateRowConstraints } from "./TemplatePage";
+interface TemplateRowProps {
+  id: TemplateRowId;
+  constraints: TemplateRowConstraints;
+  notLastRow: boolean;
+}
+
 /* Styling */
 
 const StyledTemplateRowRoot = styled(Box, {
@@ -29,8 +38,8 @@ const StyledTemplateRowRoot = styled(Box, {
   slot: "root",
 })(() => ({}));
 
-const TemplateRow = ({ id, constraints, notLastRow }) => {
-  const root = React.useRef();
+const TemplateRow = ({ id, constraints, notLastRow }: TemplateRowProps) => {
+  const root = React.useRef<HTMLDivElement>();
 
   const dispatch = useAppDispatch();
   const indexElement = useAppSelector(
@@ -41,7 +50,7 @@ const TemplateRow = ({ id, constraints, notLastRow }) => {
   /* Have to use lodash cloneDeep to get copy that doesn't mutate nested redux state 
   Refer to: https://redux.js.org/usage/structuring-reducers/immutable-update-patterns
   */
-  const elements = cloneDeep(
+  const elements: TemplateElement[] = cloneDeep(
     useAppSelector((state) =>
       row.elements.map((_el) => state.templateEditor.elements.byId[_el])
     )
@@ -60,7 +69,7 @@ const TemplateRow = ({ id, constraints, notLastRow }) => {
 
   /* Listens to resize events of the root div of the row and stores them in state */
   React.useLayoutEffect(() => {
-    let resizeObserver = new ResizeObserver((entries) => {
+    const resizeObserver = new ResizeObserver((entries) => {
       // ! Not currently using, but possibly in the future
       /* dispatch(
         updateTemplateRowHeight({
@@ -69,7 +78,7 @@ const TemplateRow = ({ id, constraints, notLastRow }) => {
         })
       ); */
     });
-    resizeObserver.observe(root.current);
+    root.current && resizeObserver.observe(root.current);
 
     return () => {
       resizeObserver.disconnect();
@@ -87,7 +96,7 @@ const TemplateRow = ({ id, constraints, notLastRow }) => {
         //width: constraints.maxWidth,
         height: row.fillHeight ? "100%" : constraints.minHeight,
         minHeight: constraints.minHeight,
-        borderBottom: notLastRow && "2px solid black",
+        borderBottom: notLastRow ? "2px solid black" : "none",
       }}
     >
       {localElements?.map((el, idx) => {
@@ -97,7 +106,9 @@ const TemplateRow = ({ id, constraints, notLastRow }) => {
         return (
           <Element
             key={el.id}
-            ref={(domEl) => (refs.current[idx] = domEl)}
+            ref={(domEl) => {
+              if (domEl != null) refs.current[idx] = domEl;
+            }}
             element={el}
             isIndexElement={el.id === indexElement}
             handleUpdateIndexElement={setIndexElement}
@@ -124,7 +135,6 @@ const TemplateRow = ({ id, constraints, notLastRow }) => {
         )}
       </Box>
       <Box
-        direction="row"
         sx={{
           position: "absolute",
           top: 0,
