@@ -1,13 +1,23 @@
 export type TemplateElementId = string;
 export type TemplateRowId = string;
 export type GridDataObjectId = string;
+export type ElementBorders = boolean[];
+export type TemplateElementType =
+  | "text_single"
+  | "text_multiline"
+  | "placeholder";
+
+export interface TemplateElementStyles {
+  widthPercent: number;
+  color: string;
+  borders: ElementBorders;
+}
 
 export interface TemplateElement {
   id: TemplateElementId;
   name: string;
-  color: string;
-  type: "text_single" | "text_multiline";
-  widthPercent: number;
+  type: TemplateElementType;
+  styles: TemplateElementStyles;
 }
 
 export interface TemplateRow {

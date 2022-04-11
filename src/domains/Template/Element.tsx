@@ -11,13 +11,38 @@ import InfoIcon from "@mui/icons-material/Info";
 import PopupState, { bindToggle, bindPopover } from "material-ui-popup-state";
 
 import ElementPopover from "./ElementPopover";
-import DefaultTemplate from "./DefaultTemplate";
+import {
+  TemplateElement,
+  TemplateElementId,
+} from "../../global/gridState.types";
+
+// Types
+interface ElementProps {
+  element: TemplateElement;
+  isIndexElement: boolean;
+  handleUpdateIndexElement: (
+    elementId: TemplateElementId | null | undefined
+  ) => void;
+  handleResizeLeft: (e: React.MouseEvent, elementId: TemplateElementId) => void;
+  handleResizeRight: (
+    e: React.MouseEvent,
+    elementId: TemplateElementId
+  ) => void;
+  showResizeLeft: boolean;
+  showResizeRight: boolean;
+  handleUpdateElement: (
+    elementId: TemplateElementId,
+    newElementData: TemplateElement
+  ) => void;
+  handleRemoveElement: (elementId: TemplateElementId) => void;
+  lastElement: boolean;
+}
 
 /* Styling */
 const StyledElementRoot = styled(Box, {
   name: "Element",
   slot: "root",
-})(({ props, theme }) => ({
+})(() => ({
   display: "flex",
   justifyContent: "space-around",
   alignItems: "center",
@@ -37,20 +62,19 @@ const Element = React.forwardRef(
       handleUpdateElement,
       handleRemoveElement,
       lastElement,
-    },
-    ref
+    }: ElementProps,
+    ref: React.ForwardedRef<HTMLDivElement>
   ) => {
-    const color1 = alpha(element.color, 0.3);
-    const color2 = alpha(element.color, 0.8);
-    const isPlaceholder =
-      element.type === DefaultTemplate.templateElementType.placeholder;
+    const color1 = alpha(element.styles.color, 0.3);
+    const color2 = alpha(element.styles.color, 0.8);
+    const isPlaceholder = element.type === "placeholder";
     return (
       <StyledElementRoot
         ref={ref}
         sx={{
-          width: `${element.widthPercent}%`,
+          width: `${element.styles.widthPercent}%`,
           height: "100%",
-          borderRight: !lastElement && "2px solid black",
+          borderRight: !lastElement ? "2px solid black" : "none",
           backgroundColor: color1,
           ...(isPlaceholder && {
             backgroundImage: `linear-gradient(135deg, #777 25%, #999 25%, #999 50%, #777 50%, #777 75%, #999 75%, #999 100%)`,

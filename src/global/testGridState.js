@@ -10,7 +10,6 @@ const testGridState = {
             "038df479-e5a6-41b6-af1f-4a8a2d0d0318",
           ],
           fillHeight: false,
-          heightPixel: 50,
         },
       },
       allIds: ["3ef68b18-c529-4a4c-9822-890f5b4646fd"],
@@ -20,16 +19,22 @@ const testGridState = {
         "d2a5e8c0-7a62-46aa-a0da-bea31ca406e9": {
           id: "d2a5e8c0-7a62-46aa-a0da-bea31ca406e9",
           name: "Bed",
-          color: "#e20d36",
           type: "text_single",
-          widthPercent: 50,
+          styles: {
+            color: "#6310ef",
+            widthPercent: 50,
+            borders: [],
+          },
         },
         "038df479-e5a6-41b6-af1f-4a8a2d0d0318": {
           id: "038df479-e5a6-41b6-af1f-4a8a2d0d0318",
           name: "Name",
-          color: "#5a10ff",
           type: "text_single",
-          widthPercent: 50,
+          styles: {
+            color: "#5a10ff",
+            widthPercent: 50,
+            borders: [],
+          },
         },
       },
       allIds: [

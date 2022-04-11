@@ -7,10 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 // Redux
 import { useAppSelector, useAppDispatch } from "../../hooks";
-import {
-  swapTemplateRows,
-  updateTemplateRowHeight,
-} from "./templateEditorSlice";
+import { swapTemplateRows } from "./templateEditorSlice";
 
 // Utility
 import { cloneDeep } from "lodash-es";
@@ -64,12 +61,13 @@ const TemplateRow = ({ id, constraints, notLastRow }) => {
   /* Listens to resize events of the root div of the row and stores them in state */
   React.useLayoutEffect(() => {
     let resizeObserver = new ResizeObserver((entries) => {
-      dispatch(
+      // ! Not currently using, but possibly in the future
+      /* dispatch(
         updateTemplateRowHeight({
           rowId: row.id,
           rowHeight: entries[0].contentRect.height,
         })
-      );
+      ); */
     });
     resizeObserver.observe(root.current);
 

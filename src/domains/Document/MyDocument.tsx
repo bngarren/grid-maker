@@ -53,6 +53,7 @@ type DocumentStyle = { [key: string]: string | number };
  */
 const DOCUMENT_STYLE: DocumentStyle = {
   height: 185,
+  gridBoxFontSize: 8,
   elementPaddingX: 1,
   lineHeight: 1.2,
   letterSpacing: -0.15,
@@ -87,7 +88,7 @@ const pdfStyles = StyleSheet.create({
   },
   gridBoxRoot: {
     position: "relative",
-    fontSize: "8pt",
+    fontSize: DOCUMENT_STYLE.gridBoxFontSize,
     display: "flex",
     flexBasis: "0",
     flex: "1",
@@ -142,7 +143,14 @@ export const getDocumentStyle = (key: string) => {
   const value = DOCUMENT_STYLE[key];
   if (typeof value === "number") {
     // These are stored as Pt and need to be sent as Px
-    if (["height", "elementPaddingX", "letterSpacing"].includes(key))
+    if (
+      [
+        "height",
+        "gridBoxFontSize",
+        "elementPaddingX",
+        "letterSpacing",
+      ].includes(key)
+    )
       return ptToPx(value);
   }
   return value;
@@ -186,7 +194,7 @@ const GridBox = ({
                   style={[
                     pdfStyles.gridBoxRowElement,
                     {
-                      width: `${templateElement.widthPercent}%`,
+                      width: `${templateElement.styles.widthPercent}%`,
                     },
                   ]}
                 >

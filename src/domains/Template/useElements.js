@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import DefaultTemplate from "./DefaultTemplate";
+import DefaultTemplate from "./GenerateDefaultTemplate";
 
 // Redux
 import { useDispatch } from "react-redux";

@@ -7,11 +7,32 @@ import {
   IconButton,
   FormControlLabel,
   Checkbox,
+  PopoverProps,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import DefaultTemplate from "./DefaultTemplate";
+import { PopupState } from "material-ui-popup-state/core";
+import {
+  TemplateElement,
+  TemplateElementId,
+  TemplateElementType,
+} from "../../global/gridState.types";
+
+// Types
+interface ElementPopoverProps {
+  popupState: PopupState;
+  element: TemplateElement;
+  isIndexElement: boolean;
+  onChangeIndexElement: (
+    elementId: TemplateElementId | null | undefined
+  ) => void;
+  onChangeElement: (
+    elementId: TemplateElementId,
+    newElementData: TemplateElement
+  ) => void;
+  onDeleteElement: (elementId: TemplateElementId) => void;
+}
 
 const ElementPopover = React.forwardRef(
   (
@@ -23,20 +44,17 @@ const ElementPopover = React.forwardRef(
       onChangeElement,
       onDeleteElement,
       ...props
-    },
-    ref
+    }: ElementPopoverProps & PopoverProps,
+    ref: React.ForwardedRef<HTMLDivElement>
   ) => {
     // Controlled inputs
-    const [name, setName] = React.useState();
-    const [placeholder, setPlaceholder] = React.useState();
-    const [useAsIndex, setUseAsIndex] = React.useState();
+    const [name, setName] = React.useState<string>("");
+    const [placeholder, setPlaceholder] = React.useState<boolean>();
+    const [useAsIndex, setUseAsIndex] = React.useState<boolean>();
 
     const reset = React.useCallback(() => {
       setName(element.name ?? "");
-      setPlaceholder(
-        element.type === DefaultTemplate.templateElementType.placeholder ||
-          false
-      );
+      setPlaceholder(element.type === "placeholder" || false);
       setUseAsIndex(isIndexElement || false);
     }, [element, isIndexElement]);
 
@@ -44,17 +62,17 @@ const ElementPopover = React.forwardRef(
       reset();
     }, [element, reset]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.SyntheticEvent) => {
       e.preventDefault();
 
-      let newType;
+      let newType: TemplateElementType;
       if (placeholder) {
-        newType = DefaultTemplate.templateElementType.placeholder;
+        newType = "placeholder";
       } else {
-        newType = DefaultTemplate.templateElementType.text_single;
+        newType = "text_single";
       }
 
-      let newElementData = { ...element, name: name, type: newType };
+      const newElementData = { ...element, name: name, type: newType };
 
       onChangeElement(element.id, newElementData);
 
@@ -95,12 +113,11 @@ const ElementPopover = React.forwardRef(
             justifyContent: "space-between",
             width: "300px",
             MinHeight: "200px",
-            boxShadow: `inset 0px 0px 0px 4px ${element.color}`,
+            boxShadow: `inset 0px 0px 0px 4px ${element.styles.color}`,
             padding: "8px",
           }}
         >
           <Box
-            name="header"
             sx={{
               display: "flex",
               flexDirection: "row",
@@ -112,7 +129,6 @@ const ElementPopover = React.forwardRef(
             </IconButton>
           </Box>
           <Box
-            name="content"
             sx={{
               flexGrow: 1,
             }}
@@ -122,7 +138,7 @@ const ElementPopover = React.forwardRef(
               sx={{
                 fontSize: "1rem",
               }}
-            >{`Width: ${Math.round(element.widthPercent)}%`}</Typography>
+            >{`Width: ${Math.round(element.styles.widthPercent)}%`}</Typography>
             <FormControlLabel
               control={
                 <Checkbox
@@ -148,7 +164,6 @@ const ElementPopover = React.forwardRef(
             />
           </Box>
           <Box
-            name="footer"
             sx={{
               display: "flex",
               flexDirection: "row",

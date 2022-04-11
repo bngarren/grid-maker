@@ -80,11 +80,7 @@ const TemplatePage = () => {
     if (templateRows.length >= GRIDBOX_CONSTRAINTS.maxRows) {
       return;
     }
-    dispatch(
-      addTemplateRow({
-        widthPercent: 100,
-      })
-    );
+    dispatch(addTemplateRow());
   };
 
   const handleSaveTemplate = () => {

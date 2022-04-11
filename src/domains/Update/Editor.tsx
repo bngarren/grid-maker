@@ -175,7 +175,7 @@ const Editor = ({ control, getFieldState }: EditorProps<FormElementValues>) => {
                         label={templateElement.name}
                         isDirty={isDirty}
                         fieldError={error}
-                        width={templateElement.widthPercent}
+                        width={templateElement.styles.widthPercent}
                         multiline={template.rows.byId[rowId].fillHeight}
                         minRows={2}
                         {...field}

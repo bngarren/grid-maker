@@ -1,14 +1,42 @@
-import { createSlice, current } from "@reduxjs/toolkit";
-import DefaultTemplate from "./DefaultTemplate";
+import {
+  createSlice,
+  CaseReducer,
+  current,
+  PayloadAction,
+} from "@reduxjs/toolkit";
+import {
+  GridTemplate,
+  TemplateElement,
+  TemplateElementId,
+  TemplateRow,
+  TemplateRowId,
+} from "../../global/gridState.types";
+import DefaultTemplate from "./GenerateDefaultTemplate";
 
-const _setTemplate = (state, { payload }) => {
+// Types
+
+/**
+ * TemplateEditorState is almost the same as GridTemplate interface (becuase this
+ * is what we are building) but does allow indexElement to be undefined or null
+ */
+interface TemplateEditorState extends Omit<GridTemplate, "indexElement"> {
+  indexElement?: TemplateElementId | null;
+}
+
+const initialState: TemplateEditorState = {
+  ...DefaultTemplate.template(),
+};
+
+const _setTemplate: CaseReducer<
+  TemplateEditorState,
+  PayloadAction<TemplateEditorState>
+> = (state, { payload }) => {
   return payload;
 };
 
-const _addRow = (state, action) => {
+const _addRow: CaseReducer<TemplateEditorState> = (state) => {
   const newElement = {
     ...DefaultTemplate.element(),
-    ...action.payload,
   };
   const newRow = {
     ...DefaultTemplate.row(),
@@ -29,11 +57,14 @@ const _addRow = (state, action) => {
   console.log(current(state)); //! DEBUG
 };
 
-const _swapRows = (state, action) => {
-  const rowId = action.payload;
+const _swapRows: CaseReducer<
+  TemplateEditorState,
+  PayloadAction<TemplateRowId>
+> = (state, { payload }) => {
+  const rowId = payload;
   const rowIndex = state.rows.allIds.indexOf(rowId);
   if (state.rows.allIds[rowIndex + 1] != null) {
-    let newRows = [...state.rows.allIds];
+    const newRows = [...state.rows.allIds];
     // https://stackoverflow.com/a/59398737
     [newRows[rowIndex + 1], newRows[rowIndex]] = [
       newRows[rowIndex],
@@ -43,23 +74,20 @@ const _swapRows = (state, action) => {
   }
 };
 
-const _updateRowHeight = (state, { payload }) => {
-  const rowId = payload.rowId;
-  const rowHeight = payload.rowHeight;
-  state.rows.byId[rowId].heightPixel = rowHeight;
-};
-
-const _updateRowElements = (state, { payload }) => {
+const _updateRowElements: CaseReducer<
+  TemplateEditorState,
+  PayloadAction<{ rowId: TemplateRowId; rowElements: TemplateElement[] }>
+> = (state, { payload }) => {
   const rowId = payload.rowId;
   const rowElements = payload.rowElements;
 
-  let prevElements = [...state.rows.byId[rowId].elements];
+  const prevElements = [...state.rows.byId[rowId].elements];
 
   /* Next, check to see if this row's 'elements' array has dropped some elementID's
   since last state, and check if they are used elsewhere (in other rows). If not, we will remove them. */
 
   // First, see which elementIDs are missing compared to previous state of row
-  let elementIdsToRemove = prevElements.filter(
+  const elementIdsToRemove = prevElements.filter(
     (pe) => findByElementID(rowElements, pe) === -1
   );
 
@@ -101,24 +129,27 @@ const _updateRowElements = (state, { payload }) => {
   }
 };
 
-const _updateRowFillHeight = (state, { payload }) => {
+const _updateRowFillHeight: CaseReducer<
+  TemplateEditorState,
+  PayloadAction<{ rowId: TemplateRowId } & Pick<TemplateRow, "fillHeight">>
+> = (state, { payload }) => {
   state.rows.byId[payload.rowId].fillHeight = payload.fillHeight;
 };
 
-const _updateIndexElement = (state, { payload }) => {
-  state.indexElement = payload || null;
+const _updateIndexElement: CaseReducer<
+  TemplateEditorState,
+  PayloadAction<TemplateElementId | null> // allow null only in TemplateEditor
+> = (state, { payload }) => {
+  state.indexElement = payload;
 };
 
 export const templateEditorSlice = createSlice({
   name: "templateEditor",
-  initialState: {
-    ...DefaultTemplate.template(),
-  },
+  initialState: initialState,
   reducers: {
     setTemplate: _setTemplate,
     addTemplateRow: _addRow,
     swapTemplateRows: _swapRows,
-    updateTemplateRowHeight: _updateRowHeight,
     updateTemplateRowElements: _updateRowElements,
     updateTemplateRowFillHeight: _updateRowFillHeight,
     updateIndexElement: _updateIndexElement,
@@ -130,7 +161,6 @@ export const {
   setTemplate,
   addTemplateRow,
   swapTemplateRows,
-  updateTemplateRowHeight,
   updateTemplateRowElements,
   updateTemplateRowFillHeight,
   updateIndexElement,
@@ -139,9 +169,9 @@ export const {
 export default templateEditorSlice.reducer;
 
 /* Helpers */
-const findByElementID = (testArray, id) => {
+function findByElementID(testArray: TemplateElement[], id: TemplateElementId) {
   if (!Array.isArray(testArray)) {
     throw new Error("Not an array");
   }
   return testArray.findIndex((el) => el.id === id);
-};
+}

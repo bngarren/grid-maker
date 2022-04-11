@@ -34,7 +34,7 @@ const StyledGridBoxRoot = styled(Paper, {
   height: getDocumentStyle("height"),
   border: "1px solid",
   borderColor: theme.palette.primary.main,
-  fontSize: ptToPx(8),
+  fontSize: `${getDocumentStyle("gridBoxFontSize")}px`,
   fontFamily: "Roboto",
   minWidth: `${convertedWidth}px`,
   maxWidth: `${convertedWidth}px`,
@@ -99,7 +99,7 @@ const DemoBox = ({ control, collapsed }: DemoBoxProps) => {
                   return (
                     <StyledGridBoxElement
                       key={rel}
-                      widthPercent={templateElement.widthPercent}
+                      widthPercent={templateElement.styles.widthPercent}
                     >
                       {elementValue}
                     </StyledGridBoxElement>
