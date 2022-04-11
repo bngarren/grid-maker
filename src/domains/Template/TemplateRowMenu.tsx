@@ -1,19 +1,11 @@
 import * as React from "react";
-import {
-  Box,
-  Popover,
-  IconButton,
-  FormControlLabel,
-  Checkbox,
-  PopoverProps,
-} from "@mui/material";
+import { Box, Popover, IconButton, PopoverProps } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
 // Reduce
 import { useAppSelector, useAppDispatch } from "../../hooks";
-import { updateTemplateRowFillHeight } from "./templateEditorSlice";
 
 // Types
 import { PopupState } from "material-ui-popup-state/core";
@@ -53,15 +45,6 @@ const TemplateRowMenu = React.forwardRef(
 
     const handleCloseButton = () => {
       handleOnClose();
-    };
-
-    const handleChangeFillHeight = () => {
-      dispatch(
-        updateTemplateRowFillHeight({
-          rowId: rowId,
-          fillHeight: !row.fillHeight,
-        })
-      );
     };
 
     return (
@@ -106,15 +89,6 @@ const TemplateRowMenu = React.forwardRef(
             <IconButton onClick={onAddElement}>
               <AddIcon />
             </IconButton>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={row.fillHeight}
-                  onChange={handleChangeFillHeight}
-                />
-              }
-              label="Fill height?"
-            />
           </Box>
           <Box
             sx={{

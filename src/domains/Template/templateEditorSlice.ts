@@ -74,6 +74,16 @@ const _swapRows: CaseReducer<
   }
 };
 
+const updateRowFillHeight = (
+  state: TemplateEditorState,
+  {
+    rowId,
+    fillHeight,
+  }: { rowId: TemplateRowId } & Pick<TemplateRow, "fillHeight">
+) => {
+  state.rows.byId[rowId].fillHeight = fillHeight;
+};
+
 const _updateRowElements: CaseReducer<
   TemplateEditorState,
   PayloadAction<{ rowId: TemplateRowId; rowElements: TemplateElement[] }>
@@ -117,23 +127,40 @@ const _updateRowElements: CaseReducer<
   if (rowElements.length === 0) {
     delete state.rows.byId[rowId];
     state.rows.allIds = state.rows.allIds.filter((ri) => ri !== rowId);
-  } else {
-    /* Otherwise, update the row's 'elements' key with fresh element ID's */
+  } /* Otherwise, update the row's 'elements' key with fresh element ID's */ else {
     state.rows.byId[rowId].elements = rowElements.map((re) => re.id);
     /* Finally, add or update the new elements */
     for (const re of rowElements) {
-      state.elements.byId[re.id] = re;
+      state.elements.byId[re.id] = re; //Add or update the byId object
       state.elements.allIds.indexOf(re.id) === -1 &&
-        state.elements.allIds.push(re.id);
+        state.elements.allIds.push(re.id); // Add ids to allIds that aren't currently present
     }
   }
-};
 
-const _updateRowFillHeight: CaseReducer<
-  TemplateEditorState,
-  PayloadAction<{ rowId: TemplateRowId } & Pick<TemplateRow, "fillHeight">>
-> = (state, { payload }) => {
-  state.rows.byId[payload.rowId].fillHeight = payload.fillHeight;
+  // Update the row's fill Height
+  /* If there is only 1 element on the row and the element type is "text_multiline", make the row height expand, i.e fillHeight = true
+  If there is more than 1 element on the row, the fillHeight is always false
+   */
+  // If row still exists (could have been deleted above)
+  if (state.rows.byId[rowId] != null) {
+    let newFillHeight: boolean;
+    if (state.rows.byId[rowId].elements.length === 1) {
+      if (
+        state.elements.byId[state.rows.byId[rowId].elements[0]].type ===
+        "text_multiline"
+      ) {
+        newFillHeight = true;
+      } else {
+        newFillHeight = false;
+      }
+    } else {
+      newFillHeight = false;
+    }
+    updateRowFillHeight(state, {
+      rowId: rowId,
+      fillHeight: newFillHeight,
+    });
+  }
 };
 
 const _updateIndexElement: CaseReducer<
@@ -151,7 +178,6 @@ export const templateEditorSlice = createSlice({
     addTemplateRow: _addRow,
     swapTemplateRows: _swapRows,
     updateTemplateRowElements: _updateRowElements,
-    updateTemplateRowFillHeight: _updateRowFillHeight,
     updateIndexElement: _updateIndexElement,
   },
 });
@@ -162,7 +188,6 @@ export const {
   addTemplateRow,
   swapTemplateRows,
   updateTemplateRowElements,
-  updateTemplateRowFillHeight,
   updateIndexElement,
 } = templateEditorSlice.actions;
 

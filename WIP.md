@@ -1,4 +1,12 @@
 # 4/11
-- Converting useElements to TS
-- Ensure current resizing functionality is working
-- Trying to add borders dynamically
+- Rethinking how TemplateEditor works. 
+   - If an element is the sole element on a row, it can be selected as "text_multiline" which applies fillHeight true to the row and makes the element a textarea in the Editor
+   - Otherwise, elements that are part of a multi-element row can be "text_single"
+   - The indexElement selection should be a separate dropdown menu to the right of the TemplateEditor. This will enforce that at least 1 element serves as an indexElement at all times
+      - "The "index" element should be unique and is used to order the grid items"
+   - Each ElementPopover should include:
+      - Name field
+      - Type selection (single, multiline, placeholder)
+      - Draw borders checkbox
+      - Font style: center, bold
+      - Delete element button

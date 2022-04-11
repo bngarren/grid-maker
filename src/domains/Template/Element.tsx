@@ -19,6 +19,7 @@ import {
 // Types
 interface ElementProps {
   element: TemplateElement;
+  isOnlyRowElement: boolean;
   isIndexElement: boolean;
   handleUpdateIndexElement: (
     elementId: TemplateElementId | null | undefined
@@ -53,6 +54,7 @@ const Element = React.forwardRef(
   (
     {
       element,
+      isOnlyRowElement,
       isIndexElement,
       handleUpdateIndexElement,
       handleResizeLeft,
@@ -108,6 +110,7 @@ const Element = React.forwardRef(
                 {...bindPopover(popupState)}
                 popupState={popupState}
                 element={element}
+                isOnlyRowElement={isOnlyRowElement}
                 isIndexElement={isIndexElement}
                 onChangeIndexElement={handleUpdateIndexElement}
                 onChangeElement={handleUpdateElement}

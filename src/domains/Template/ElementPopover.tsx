@@ -8,6 +8,11 @@ import {
   FormControlLabel,
   Checkbox,
   PopoverProps,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -23,6 +28,7 @@ import {
 interface ElementPopoverProps {
   popupState: PopupState;
   element: TemplateElement;
+  isOnlyRowElement: boolean;
   isIndexElement: boolean;
   onChangeIndexElement: (
     elementId: TemplateElementId | null | undefined
@@ -39,6 +45,7 @@ const ElementPopover = React.forwardRef(
     {
       popupState,
       element,
+      isOnlyRowElement,
       isIndexElement,
       onChangeIndexElement,
       onChangeElement,
@@ -49,12 +56,12 @@ const ElementPopover = React.forwardRef(
   ) => {
     // Controlled inputs
     const [name, setName] = React.useState<string>("");
-    const [placeholder, setPlaceholder] = React.useState<boolean>();
+    const [type, setType] = React.useState<TemplateElementType>("text_single");
     const [useAsIndex, setUseAsIndex] = React.useState<boolean>();
 
     const reset = React.useCallback(() => {
       setName(element.name ?? "");
-      setPlaceholder(element.type === "placeholder" || false);
+      setType(element.type);
       setUseAsIndex(isIndexElement || false);
     }, [element, isIndexElement]);
 
@@ -65,14 +72,7 @@ const ElementPopover = React.forwardRef(
     const handleSubmit = (e: React.SyntheticEvent) => {
       e.preventDefault();
 
-      let newType: TemplateElementType;
-      if (placeholder) {
-        newType = "placeholder";
-      } else {
-        newType = "text_single";
-      }
-
-      const newElementData = { ...element, name: name, type: newType };
+      const newElementData = { ...element, name: name, type: type };
 
       onChangeElement(element.id, newElementData);
 
@@ -148,20 +148,24 @@ const ElementPopover = React.forwardRef(
               }
               label="Use as Index?"
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={placeholder}
-                  onChange={(e) => setPlaceholder((prev) => !prev)}
-                />
-              }
-              label="Placeholder?"
-            />
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={placeholder}
-            />
+            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+              <InputLabel id="select-type">Input type</InputLabel>
+              <Select
+                labelId="select-type"
+                id="select-type"
+                value={type}
+                onChange={(e: SelectChangeEvent) =>
+                  setType(e.target.value as TemplateElementType)
+                }
+                label="Input type"
+              >
+                <MenuItem value={"text_single"}>Single line</MenuItem>
+                <MenuItem value={"text_multiline"} disabled={!isOnlyRowElement}>
+                  Multiline
+                </MenuItem>
+                <MenuItem value={"placeholder"}>Placeholder</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
           <Box
             sx={{

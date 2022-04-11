@@ -110,6 +110,7 @@ const TemplateRow = ({ id, constraints, notLastRow }: TemplateRowProps) => {
               if (domEl != null) refs.current[idx] = domEl;
             }}
             element={el}
+            isOnlyRowElement={localElements.length === 1}
             isIndexElement={el.id === indexElement}
             handleUpdateIndexElement={setIndexElement}
             handleResizeLeft={resizeLeft}
